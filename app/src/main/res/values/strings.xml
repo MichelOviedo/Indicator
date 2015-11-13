@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">Evalúa Facíl</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">Iniciar Sesión</string>
+
+    <string name="errorConexion">Necesitas una conexion estable a internet para realizar esta acción.</string>
+    <string name="website">www.evaluafacil.edu.mx</string>
+
+    <!-- Etiquetas -->
+    <string name="welcom">Bienvenid@</string>
+    <string name="grade">°</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="cuidado">¡Cuidado!</string>
+    <string name="save">Guardar</string>
+
+    <!-- Indicators -->
+    <string name="name">Nombre del alumno</string>
+    <string name="indicatorAbb">Flatas</string>
+    <string name="indicatorAbbTitle">Pronporciona las faltas de los alumnos</string>
+    <string name="indicatorAbbSubTitle">Contidad de asistencias </string>
+
+<!-- Login -->
+    <string name="user">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="start">¡Comenzar!</string>
+    <string name="help">Necesito ayuda</string>
+    <string name="errorLogin">Usuario y/o Contraseña no son validas, vuelva a intentarlo.</string>
+    <string name="validateUserTitle">Comprobando informacion</string>
+    <string name="validateUserMessage">Validando usuario y contraseña, por favor espere unos segundos...</string>
+    <string name="validatePorfileTitle">Obtenetiendo perfil</string>
+    <string name="validatePorfileMessage">Cargando perfil, por favor espere unos segundos</string>
+
+    <!-- Cerrar Sesion -->
+    <string name="contentSesion">¿Estas seguro(a) de querer CERRAR SESION?</string>
+
+
+    <string-array name="menuDrawer">
+        <item>Dejanos un comentario</item>
+        <item>Cerrar Sesión</item>
+    </string-array>
+    <string name="title_activity_indicator_tabs">IndicatorTabs</string>
+
+</resources>
