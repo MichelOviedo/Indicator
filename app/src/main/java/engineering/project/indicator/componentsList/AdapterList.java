@@ -19,6 +19,9 @@ import java.util.StringTokenizer;
 import engineering.project.indicator.R;
 import engineering.project.indicator.activities.IndicatorTabs;
 import engineering.project.indicator.preferences.Preferences;
+import engineering.project.indicator.structureRealm.Realm_viewTables;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by EduardoMichel on 08/11/2015.
@@ -29,6 +32,7 @@ public class AdapterList extends BaseExpandableListAdapter {
     ArrayList<ParentList> mParent;
     private LayoutInflater inflater;
     Preferences p;
+    Realm realm;
 
     public AdapterList(Context context, ArrayList<ParentList> parent) {
         this.context = context;
@@ -110,18 +114,29 @@ public class AdapterList extends BaseExpandableListAdapter {
             view = inflater.inflate(R.layout.list_child, viewGroup, false);
         }
 
+
+
         TextView textView = (TextView) view.findViewById(R.id.item_child);
         textView.setText(mParent.get(groupPosition).getArrayChildren().get(childPosition));
         LinearLayout hijo = (LinearLayout) view.findViewById(R.id.lnlChild);
         ImageView status = (ImageView) view.findViewById(R.id.imvStatus);
 
-        status.setBackgroundResource(R.drawable.noterror);
-
-        view.setTag(holder);
-
         final String toast = textView.getText().toString();
         StringTokenizer st = new StringTokenizer(toast, view.getResources().getString(R.string.grade));
         final String key = st.nextToken() + ""+ st.nextToken();
+
+        realm = Realm.getInstance(context);
+        RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
+                .equalTo("idGroup",key)
+                .findAll();
+
+
+            status.setBackgroundResource(R.drawable.noterror);
+
+        view.setTag(holder);
+
+
+
 
 
         hijo.setOnClickListener(new View.OnClickListener() {

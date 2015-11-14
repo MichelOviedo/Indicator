@@ -120,8 +120,7 @@ public class TabAbsences extends Fragment {
                 .equalTo("idGroup",p.getIdGroup())
                 .findAll();
         if (viewTables.get(0).getAbsences_count() <= 0) {
-            content.setVisibility(View.VISIBLE);
-            subContenedor.setVisibility(View.INVISIBLE);
+           viewLayoutList();
         }
         else{
             viewLatoutEdit();
@@ -261,8 +260,7 @@ public class TabAbsences extends Fragment {
                 view.get(0).setAbsences_count(0);
                 realm.commitTransaction();
 
-                content.setVisibility(View.VISIBLE);
-                subContenedor.setVisibility(View.INVISIBLE);
+                viewLayoutList();
             }
         });
 
@@ -297,6 +295,27 @@ public class TabAbsences extends Fragment {
 
     }
 
+    private void viewLayoutList(){
+        content.setVisibility(View.VISIBLE);
+        subContenedor.setVisibility(View.INVISIBLE);
+
+        for (int x = 0; x < listStudent.size(); x++){
+            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
+                    .equalTo("idStudent",listStudent.get(x).getId())
+                    .findAll();
+
+            extIndicator = (EditText) view.findViewById(x);
+
+            showLog("Valor de indicator: " + stIndi.get(0).getAbsences_count());
+            if (stIndi.get(0).getAbsences_count() <=0)
+                extIndicator.setText("0");
+            else
+                extIndicator.setText(stIndi.get(0).getAbsences_count()+"");
+
+
+
+        }
+    }
     private void showLog(String log){
         Log.v("TabAbsences",log);
     }

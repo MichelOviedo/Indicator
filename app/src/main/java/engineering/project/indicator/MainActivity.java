@@ -30,8 +30,10 @@ import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
+import engineering.project.indicator.structureRealm.Realm_students_indicator;
 import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.structureRealm.Realm_user;
+import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -173,9 +175,11 @@ public class MainActivity extends Activity {
         realm.clear(Realm_faculty_member.class);
         realm.clear(Realm_grades.class);
         realm.clear(Realm_school_groups.class);
+        realm.clear(Realm_students.class);
+        realm.clear(Realm_students_indicator.class);
         realm.clear(Realm_subjects.class);
         realm.clear(Realm_user.class);
-        realm.clear(Realm_students.class);
+        realm.clear(Realm_viewTables.class);
         realm.commitTransaction();
         p.clear();
         loadLogin();

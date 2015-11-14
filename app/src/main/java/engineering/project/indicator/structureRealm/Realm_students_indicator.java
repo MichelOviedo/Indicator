@@ -6,7 +6,9 @@ import io.realm.RealmObject;
  * Created by EduardoMichel on 09/11/2015.
  */
 public class Realm_students_indicator extends RealmObject {
-    private double absences_count, participation_score, performance_score,
+
+    private int absences_count;
+    private double participation_score, performance_score,
     reading_score,math_score,friendship_score;
     private String createDate;
 
@@ -28,11 +30,11 @@ public class Realm_students_indicator extends RealmObject {
         this.subject_id = subject_id;
     }
 
-    public double getAbsences_count() {
+    public int getAbsences_count() {
         return absences_count;
     }
 
-    public void setAbsences_count(double absences_count) {
+    public void setAbsences_count(int absences_count) {
         this.absences_count = absences_count;
     }
 
