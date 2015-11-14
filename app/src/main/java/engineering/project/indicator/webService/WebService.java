@@ -366,6 +366,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                 new SweetAlertDialog(context, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
                         .setTitleText(rs.getString(R.string.cuidado))
                         .setContentText(rs.getString(R.string.errorConexion))
+                        .setConfirmText(rs.getString(R.string.errorConfirm))
                         .setCustomImage(R.mipmap.wifi_conexion)
                         .show();
                 break;
