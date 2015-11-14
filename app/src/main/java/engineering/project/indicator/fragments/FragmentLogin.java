@@ -2,6 +2,7 @@ package engineering.project.indicator.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.webService.WebService;
@@ -25,6 +26,7 @@ public class FragmentLogin extends Fragment {
     EditText user, password;
     Button start, help;
     Preferences p;
+    Resources rs;
 
     public FragmentLogin(){}
 
@@ -47,6 +49,7 @@ public class FragmentLogin extends Fragment {
         start = (Button) view.findViewById(R.id.btnLoginStart);
         help = (Button) view.findViewById(R.id.btnLoginHelp);
         p = new Preferences(context);
+        rs = getResources();
 
     }
 
@@ -61,23 +64,39 @@ public class FragmentLogin extends Fragment {
                 }
             }
         });
+
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new SweetAlertDialog(context, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                        .setTitleText(rs.getString(R.string.errorMessage))
+                        .setContentText(rs.getString(R.string.construccion))
+                        .setConfirmText(rs.getString(R.string.errorConfirm))
+                        .setCustomImage(R.mipmap.construccion)
+                        .show();
+
+            }
+        });
     }
 
     private boolean validateEnter(){
         if (!user.getText().toString().equalsIgnoreCase("") &&
                 ! password.getText().toString().equalsIgnoreCase(""))
             return true;
-        else
-            messageToast("Faltan datos por ingresar, vuelva a intertar");
+        else{
+            new SweetAlertDialog(context)
+                    .setTitleText(rs.getString(R.string.errorMessage))
+                    .setContentText(rs.getString(R.string.faltaD))
+                    .setConfirmText(rs.getString(R.string.errorConfirm));
+            return false;
+        }
 
-        return false;
-    }
-
-    private void messageToast(String toast){
-        Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
     }
 
     private void showLog(String log){
         Log.v("FragmentLogin",log);
     }
+
+
 }

@@ -57,6 +57,8 @@
     <!-- etiquetas error-->
     <string name="errorMessage">Oops...!</string>
     <string name="errorConfirm">Lo entiendo!</string>
+    <string name="construccion">Esta parte permanece en construcción. Disculpe las molestias que esto pueda ocasionar</string>
+    <string name="faltaD">Aun no has proporcionado todos los campos...!</string>
 
     <string-array name="menuDrawer">
         <item>Dejanos un comentario</item>
