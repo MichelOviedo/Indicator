@@ -54,6 +54,9 @@
     <!-- Cerrar Sesion -->
     <string name="contentSesion">¿Estas seguro(a) de querer CERRAR SESION?</string>
 
+    <!-- etiquetas error-->
+    <string name="errorMessage">Oops...!</string>
+    <string name="errorConfirm">Lo entiendo!</string>
 
     <string-array name="menuDrawer">
         <item>Dejanos un comentario</item>

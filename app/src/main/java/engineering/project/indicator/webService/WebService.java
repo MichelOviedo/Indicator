@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
@@ -70,7 +71,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
 
             pd = ProgressDialog.show(
                     context, rs.getString(R.string.validateUserTitle),
-                                rs.getString(R.string.validateUserMessage));
+                    rs.getString(R.string.validateUserMessage));
 
             StringRequest postRequest = new StringRequest(Request.Method.POST, URL,
                     new Response.Listener<String>(){
@@ -100,7 +101,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                             }catch (Exception e){
                                 showLogError("Error en progressDialog");
                             }
-                            messageToast(rs.getString(R.string.errorLogin));
+                            messageSweet(1);
                         }
                     }){
                 @Override
@@ -126,7 +127,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
             volleyRequest(postRequest);
         }
         else
-            messageToast(rs.getString(R.string.errorConexion));
+            messageSweet(2);
 
     }
 
@@ -186,7 +187,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                 allocations.setWhere(grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle());
                                 showLogError("" + grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle());
                                 new WebService(context, "api/students/in-group/" + jsonObject.getInt("id") ,
-                                                grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle() )
+                                        grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle() )
                                         .insertStudent();
                             }
 
@@ -229,10 +230,6 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                 return headers;
             }};
         volleyRequest(getRequest);
-    }
-
-    private void volleyRequest(StringRequest stringRequest){
-        Volley.newRequestQueue(context).add(stringRequest);
     }
 
     private void insertStudent(){
@@ -317,6 +314,11 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
         //api/evaluations/bimester/1/student/4
     }
 
+    private void volleyRequest(StringRequest stringRequest){
+        Volley.newRequestQueue(context).add(stringRequest);
+    }
+
+
     private boolean validateConexion(){
         ConnectivityManager conn = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -348,6 +350,26 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     //<editor-fold desc="Mensajes">
     private void messageToast(String toast){
         Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
+    }
+
+    private void messageSweet(int exec){
+        switch (exec){
+            case 1:
+                new SweetAlertDialog(context, SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText(rs.getString(R.string.errorMessage))
+                        .setContentText(rs.getString(R.string.errorLogin))
+                        .setConfirmText(rs.getString(R.string.errorConfirm))
+                        .show();
+                break;
+
+            case 2:
+                new SweetAlertDialog(context, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                        .setTitleText(rs.getString(R.string.cuidado))
+                        .setContentText(rs.getString(R.string.errorConexion))
+                        .setCustomImage(R.mipmap.wifi_conexion)
+                        .show();
+                break;
+        }
     }
 
     private void showLog(String log){
