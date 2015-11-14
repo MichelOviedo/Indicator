@@ -43,7 +43,7 @@ public class TabAbsences extends Fragment {
     Context context;
     Button save, edit;
     EditText indicator, extIndicator;
-    TextView type, count, tableTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor;
+    TextView type, count, tableTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor, titleEdit;
     RelativeLayout content, subContenedor;
     Preferences p;
     Realm realm;
@@ -103,6 +103,18 @@ public class TabAbsences extends Fragment {
         tableFileTwoPor  = (TextView) view.findViewById(R.id.txvTableFileTwoPor);
         tableFileThree  = (TextView) view.findViewById(R.id.txvTableFileThree);
         tableFileThreePor  = (TextView) view.findViewById(R.id.txvTableFileThreePor);
+        titleEdit = (TextView) view.findViewById(R.id.txvTlitleEdit);
+
+        titleEdit.setText(rs.getString(R.string.asisTitleEdit));
+        tableTitle.setText(rs.getString(R.string.titleTab));
+        tablePorcentage.setText(rs.getString(R.string.promedio));
+        tableFileOne.setText(rs.getString(R.string.asiMas));
+        tableFileTwo.setText(rs.getString(R.string.asiUna));
+        tableFileThree.setText(rs.getString(R.string.asiNinguno));
+        tableFileOnePro.setText("");
+        tableFileTwoPor.setText("");
+        tableFileThreePor.setText("");
+
 
         RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
                 .equalTo("idGroup",p.getIdGroup())
@@ -112,8 +124,7 @@ public class TabAbsences extends Fragment {
             subContenedor.setVisibility(View.INVISIBLE);
         }
         else{
-            content.setVisibility(View.INVISIBLE);
-            subContenedor.setVisibility(View.VISIBLE);
+            viewLatoutEdit();
         }
 
 
@@ -227,14 +238,13 @@ public class TabAbsences extends Fragment {
                 }
 
                 RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                        .equalTo("idGroup",p.getIdGroup())
+                        .equalTo("idGroup", p.getIdGroup())
                         .findAll();
 
                 view.get(0).setAbsences_count(1);
                 realm.commitTransaction();
 
-                content.setVisibility(View.INVISIBLE);
-                subContenedor.setVisibility(View.VISIBLE);
+                viewLatoutEdit();
 
 
             }
@@ -245,7 +255,7 @@ public class TabAbsences extends Fragment {
             public void onClick(View v) {
                 realm.beginTransaction();
                 RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                        .equalTo("idGroup",p.getIdGroup())
+                        .equalTo("idGroup", p.getIdGroup())
                         .findAll();
 
                 view.get(0).setAbsences_count(0);
@@ -255,6 +265,35 @@ public class TabAbsences extends Fragment {
                 subContenedor.setVisibility(View.INVISIBLE);
             }
         });
+
+    }
+
+    private void viewLatoutEdit(){
+        content.setVisibility(View.INVISIBLE);
+        subContenedor.setVisibility(View.VISIBLE);
+        int total = 0, ninguna= 0, una= 0, masDeUna=0;
+
+        for (int x = 0; x < listStudent.size(); x++){
+            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
+                    .equalTo("idStudent",listStudent.get(x).getId())
+                    .findAll();
+
+            if (stIndi.get(0).getAbsences_count() == 0)
+                ninguna++;
+            else
+                if (stIndi.get(0).getAbsences_count() == 1)
+                    una++;
+            else
+                    masDeUna++;
+
+        }
+
+        total = masDeUna + una + ninguna;
+
+        tableFileOnePro.setText(masDeUna * 100 / total + rs.getString(R.string.signo));
+        tableFileTwoPor.setText(una * 100 / total + rs.getString(R.string.signo));
+        tableFileThreePor.setText(ninguna * 100 / total + rs.getString(R.string.signo));
+
 
     }
 

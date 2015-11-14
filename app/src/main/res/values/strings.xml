@@ -32,6 +32,14 @@
     <string name="titlePart">Ptc.</string>
     <string name="titleMath">Mat.</string>
 
+    <string name="asisTitleEdit">Promedio de faltas</string>
+    <string name="titleTab">Alumnos</string>
+    <string name="promedio">Poncentaje</string>
+    <string name="asiNinguno">Ninguna</string>
+    <string name="asiUna">Una</string>
+    <string name="asiMas">Mas de una</string>
+    <string name="signo">%</string>
+
 <!-- Login -->
     <string name="user">Usuario</string>
     <string name="password">Contraseña</string>
