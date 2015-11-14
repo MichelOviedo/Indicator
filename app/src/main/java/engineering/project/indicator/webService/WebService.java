@@ -32,6 +32,7 @@ import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_students_indicator;
 import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.structureRealm.Realm_user;
+import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 
 
@@ -267,6 +268,15 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     indicator.setPerformance_score(-1);
                                     indicator.setIdStudent(jsonStudent.getInt("id"));
                                     indicator.setSubject_id(jsonStudent.getInt("school_group_id"));
+
+                                    Realm_viewTables viewTables = realm.createObject(Realm_viewTables.class);
+                                    viewTables.setIdGroup(ID_STUDENT);
+                                    viewTables.setAbsences_count(-1);
+                                    viewTables.setFriendship_score(-1);
+                                    viewTables.setMath_score(-1);
+                                    viewTables.setParticipation_score(-1);
+                                    viewTables.setReading_score(-1);
+                                    viewTables.setPerformance_score(-1);
                                     realm.commitTransaction();
                                 }
 

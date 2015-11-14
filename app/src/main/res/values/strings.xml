@@ -19,8 +19,9 @@
     <!-- Indicators -->
     <string name="name">Nombre del alumno</string>
     <string name="indicatorAbb">Flatas</string>
-    <string name="indicatorAbbTitle">Pronporciona las faltas de los alumnos</string>
-    <string name="indicatorAbbSubTitle">Contidad de asistencias </string>
+    <string name="indicatorAsisTitle">Pronporciona las faltas de los alumnos</string>
+    <string name="indicatorAsisSubTitle">Contidad de asistencias en el bimestre </string>
+
     <string name="espa">Español</string>
     <string name="mat">Matemáticas</string>
 

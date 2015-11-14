@@ -21,13 +21,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
 import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_students_indicator;
+import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -41,9 +41,9 @@ public class TabAbsences extends Fragment {
     TableRow.LayoutParams layoutFila, layoutId, layoutTexto;
     Resources rs;
     Context context;
-    Button save, editar;
+    Button save, edit;
     EditText indicator, extIndicator;
-    TextView type, count, tablaTitulo, tablaSubTitulo, tablaMas, tablaUno, tablaNinguno, tablaSubMas, tablaSubUno, tablaSubNinguno;
+    TextView type, count, tableTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor;
     RelativeLayout content, subContenedor;
     Preferences p;
     Realm realm;
@@ -65,44 +65,7 @@ public class TabAbsences extends Fragment {
         context = container.getContext();
 
         builder();
-
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                indicators = new ArrayList<Integer>();
-                int ind;
-                realm.beginTransaction();
-                for (int x = 0; x < listStudent.size(); x++) {
-                    extIndicator = (EditText) view.findViewById(x);
-                    RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
-                            .equalTo("idStudent", listStudent.get(x).getId())
-                            .findAll();
-
-                    showLog("Indicator results1: " + results.get(0).getAbsences_count());
-
-                    if (extIndicator.getText().toString().equalsIgnoreCase(""))
-                        ind = 0;
-                    else
-                        ind = Integer.parseInt(extIndicator.getText().toString());
-
-
-                    results.get(0).setAbsences_count(ind);
-                    if (results.get(0).getFriendship_score() >= 0 && results.get(0).getMath_score() >=0)
-                    results.get(0).setCreateDate(date());
-
-
-                    RealmResults<Realm_students_indicator> results1 = realm.where(Realm_students_indicator.class)
-                            .equalTo("idStudent", listStudent.get(x).getId())
-                            .findAll();
-
-                    realm.commitTransaction();
-                    showLog("Indicator results1: " + results1.get(0).getAbsences_count());
-                }
-
-
-            }
-        });
+        userButton();
 
         return view;
     }
@@ -124,24 +87,37 @@ public class TabAbsences extends Fragment {
         layoutId = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT);
         layoutTexto = new TableRow.LayoutParams(160,TableRow.LayoutParams.MATCH_PARENT);
 
-        type.setText("Asistencia");
-        count.setText("Sub 30");
+        type.setText(rs.getString(R.string.indicatorAsisTitle));
+        count.setText(rs.getString(R.string.indicatorAsisSubTitle) + "30");
 
         agregarCabecera();
         agregarFilasTabla();
 
-        //subContenedor = (RelativeLayout) view.findViewById(R.id.rlt_subcontenedor_tabla);
-        //editar = (Button) view.findViewById(R.id.btn_editar_tabla);
-        //tablaTitulo = (TextView) view.findViewById(R.id.txt_asistencia_indicador);
-        //tablaSubTitulo = (TextView) view.findViewById(R.id.txt_asistencia_subindicador);
-        //tablaMas = (TextView) view.findViewById(R.id.txt_asistencia_masdeuna);
-//        tablaUno  = (TextView) view.findViewById(R.id.txt_asistencia_una);
-//        tablaNinguno  = (TextView) view.findViewById(R.id.txt_asistencia_ninguna);
-//        tablaSubMas  = (TextView) view.findViewById(R.id.txt_asistencia_submasdeuna);
-//        tablaSubUno  = (TextView) view.findViewById(R.id.txt_asistencia_subuna);
-//        tablaSubNinguno  = (TextView) view.findViewById(R.id.txt_asistencia_subninguna);
-        //
-        //subContenedor.setVisibility(View.INVISIBLE);
+        subContenedor = (RelativeLayout) view.findViewById(R.id.rltContentViewEditTable);
+        edit = (Button) view.findViewById(R.id.btnEdit);
+        tableTitle = (TextView) view.findViewById(R.id.txvTableTitle);
+        tablePorcentage = (TextView) view.findViewById(R.id.txvTablePercentage);
+        tableFileOne = (TextView) view.findViewById(R.id.txvTableFileOne);
+        tableFileOnePro  = (TextView) view.findViewById(R.id.txvTableFileOnePor);
+        tableFileTwo  = (TextView) view.findViewById(R.id.txvTableFileTwo);
+        tableFileTwoPor  = (TextView) view.findViewById(R.id.txvTableFileTwoPor);
+        tableFileThree  = (TextView) view.findViewById(R.id.txvTableFileThree);
+        tableFileThreePor  = (TextView) view.findViewById(R.id.txvTableFileThreePor);
+
+        RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
+                .equalTo("idGroup",p.getIdGroup())
+                .findAll();
+        if (viewTables.get(0).getAbsences_count() <= 0) {
+            content.setVisibility(View.VISIBLE);
+            subContenedor.setVisibility(View.INVISIBLE);
+        }
+        else{
+            content.setVisibility(View.INVISIBLE);
+            subContenedor.setVisibility(View.VISIBLE);
+        }
+
+
+
     }
 
     //<editor-fold desc="Tabla dinamica">
@@ -224,10 +200,62 @@ public class TabAbsences extends Fragment {
     }
     //</editor-fold>
 
-    public String  date() {
-        Calendar calendario = Calendar.getInstance();
-        return calendario.get(Calendar.YEAR) +"-" + calendario.get(Calendar.MONTH) + "-" +  calendario.get(Calendar.DAY_OF_MONTH) + " "+
-                calendario.get(Calendar.HOUR_OF_DAY) + ":" + calendario.get(Calendar.MINUTE) + ":" + calendario.get(Calendar.SECOND);
+    private void userButton(){
+        save.setOnClickListener(new View.OnClickListener() {
+
+            //como cambiar de fragment v4
+            @Override
+            public void onClick(View v) {
+
+                indicators = new ArrayList<Integer>();
+                int ind;
+                realm.beginTransaction();
+                for (int x = 0; x < listStudent.size(); x++) {
+                    extIndicator = (EditText) view.findViewById(x);
+                    RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .findAll();
+
+                    if (extIndicator.getText().toString().equalsIgnoreCase(""))
+                        ind = 0;
+                    else
+                        ind = Integer.parseInt(extIndicator.getText().toString());
+
+                    results.get(0).setAbsences_count(ind);
+                    //Como sincronizar la data o bien cada cuando se debe de sincronizar
+
+                }
+
+                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
+                        .equalTo("idGroup",p.getIdGroup())
+                        .findAll();
+
+                view.get(0).setAbsences_count(1);
+                realm.commitTransaction();
+
+                content.setVisibility(View.INVISIBLE);
+                subContenedor.setVisibility(View.VISIBLE);
+
+
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                realm.beginTransaction();
+                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
+                        .equalTo("idGroup",p.getIdGroup())
+                        .findAll();
+
+                view.get(0).setAbsences_count(0);
+                realm.commitTransaction();
+
+                content.setVisibility(View.VISIBLE);
+                subContenedor.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 
     private void showLog(String log){
