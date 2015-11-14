@@ -88,7 +88,8 @@ public class FragmentLogin extends Fragment {
             new SweetAlertDialog(context)
                     .setTitleText(rs.getString(R.string.errorMessage))
                     .setContentText(rs.getString(R.string.faltaD))
-                    .setConfirmText(rs.getString(R.string.errorConfirm));
+
+                    .show();
             return false;
         }
 
