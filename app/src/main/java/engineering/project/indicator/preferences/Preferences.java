@@ -70,6 +70,14 @@ public class Preferences {
     }
     //</editor-fold>
 
+    public void setMatter(String matter) {
+        e.putString("Materia", matter);
+        com(e);
+    }
+
+    public String getMatter(){
+        return p.getString("Materia", "Sin materia");
+    }
     private void com(SharedPreferences.Editor e) {
         e.commit();
     }

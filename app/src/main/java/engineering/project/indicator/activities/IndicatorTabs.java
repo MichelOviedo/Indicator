@@ -10,17 +10,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
-import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.tabsIndicators.TabAbsences;
+import engineering.project.indicator.tabsIndicators.TabFriendship;
+import engineering.project.indicator.tabsIndicators.TabMath;
+import engineering.project.indicator.tabsIndicators.TabParticipation;
+import engineering.project.indicator.tabsIndicators.TabPerformance;
+import engineering.project.indicator.tabsIndicators.TabReading;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class IndicatorTabs extends AppCompatActivity {
 
@@ -55,22 +58,30 @@ public class IndicatorTabs extends AppCompatActivity {
         realm = Realm.getInstance(this);
         p = new Preferences(this);
 
-        getStudents();
+        getMatter();
     }
 
-    private void getStudents(){
-        RealmResults<Realm_students> studentses = realm.where(Realm_students.class)
-                .equalTo("idInformal", p.getIdGroup())
-                .findAll();
-
-        Toast.makeText(this, "Cantidad: " + studentses.size(), Toast.LENGTH_LONG).show();
+    private void getMatter(){
+        StringTokenizer st = new StringTokenizer(p.getIdGroup(), ", ");
+        st.nextToken();
+        p.setMatter(st.nextToken().toString());
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        adapter.addFrag(new TabAbsences(), "Asistencia");
-        adapter.addFrag(new TabAbsences(), "Asistencia");
+
+        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
+        adapter.addFrag(new TabFriendship(), getResources().getString(R.string.titleCon));
+        adapter.addFrag(new TabPerformance(), getResources().getString(R.string.titleDesemp));
+        adapter.addFrag(new TabParticipation(), getResources().getString(R.string.titlePart));
+
+        if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.mat)))
+            adapter.addFrag(new TabMath(), getResources().getString(R.string.titleMath));
+
+
+        if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.espa)))
+            adapter.addFrag(new TabReading(), getResources().getString(R.string.titleEspa));
 
         viewPager.setAdapter(adapter);
     }
@@ -78,15 +89,39 @@ public class IndicatorTabs extends AppCompatActivity {
     private void setupTabIcons() {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
-        tabOne.setText("Asistencia");
+        tabOne.setText(getResources().getString(R.string.titleAsis));
         tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.salir, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
-        tabTwo.setText("Paricipacion");
+        tabTwo.setText(getResources().getString(R.string.titleCon));
         tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
+        TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
+        tabThree.setText(getResources().getString(R.string.titleDesemp));
+        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+        tabLayout.getTabAt(2).setCustomView(tabThree);
+
+        TextView tab = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
+        tab.setText(getResources().getString(R.string.titlePart));
+        tab.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+        tabLayout.getTabAt(3).setCustomView(tab);
+
+
+        if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.mat))){
+            TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
+            tabFour.setText(getResources().getString(R.string.titleMath));
+            tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+            tabLayout.getTabAt(4).setCustomView(tabFour);
+        }
+
+        if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.espa))){
+            TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
+            tabFour.setText(getResources().getString(R.string.titleEspa));
+            tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+            tabLayout.getTabAt(4).setCustomView(tabFour);
+        }
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

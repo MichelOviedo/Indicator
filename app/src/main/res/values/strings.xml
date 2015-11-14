@@ -21,6 +21,15 @@
     <string name="indicatorAbb">Flatas</string>
     <string name="indicatorAbbTitle">Pronporciona las faltas de los alumnos</string>
     <string name="indicatorAbbSubTitle">Contidad de asistencias </string>
+    <string name="espa">Español</string>
+    <string name="mat">Matemáticas</string>
+
+    <string name="titleEspa">Lec.</string>
+    <string name="titleDesemp">Dmp.</string>
+    <string name="titleCon">Conv.</string>
+    <string name="titleAsis">Asis.</string>
+    <string name="titlePart">Ptc.</string>
+    <string name="titleMath">Mat.</string>
 
 <!-- Login -->
     <string name="user">Usuario</string>
