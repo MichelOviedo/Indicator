@@ -103,7 +103,7 @@ public class TabMath extends Fragment {
         tableFileThreePor  = (TextView) view.findViewById(R.id.txvTableFileThreePor);
         titleEdit = (TextView) view.findViewById(R.id.txvTlitleEdit);
 
-        titleEdit.setText(rs.getString(R.string.conviEdit));
+        titleEdit.setText(rs.getString(R.string.mateEdit));
         tableTitle.setText(rs.getString(R.string.titleTab));
         tablePorcentage.setText(rs.getString(R.string.promedio));
         tableFileOne.setText(rs.getString(R.string.tabMala));
@@ -146,7 +146,7 @@ public class TabMath extends Fragment {
         txtId.setTextColor(Color.BLACK);
         txtId.setLayoutParams(layoutId);
 
-        txtNombre.setText(rs.getString(R.string.indicatorFri));
+        txtNombre.setText(rs.getString(R.string.indicatorM));
         txtNombre.setTextColor(Color.BLACK);
         txtNombre.setGravity(Gravity.CENTER_HORIZONTAL);
         txtNombre.setBackgroundResource(R.drawable.cabecera);
@@ -282,31 +282,29 @@ public class TabMath extends Fragment {
     private void viewLatoutEdit(){
         content.setVisibility(View.INVISIBLE);
         subContenedor.setVisibility(View.VISIBLE);
-        int total = 0, ninguna= 0, una= 0, masDeUna=0;
+        int total, mala= 0, regular= 0, buena=0;
 
-        /*for (int x = 0; x < listStudent.size(); x++){
+        for (int x = 0; x < listStudent.size(); x++){
             RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
                     .equalTo("idStudent",listStudent.get(x).getId())
                     .findAll();
 
-            if (stIndi.get(0).getAbsences_count() == 0)
-                ninguna++;
+            if (stIndi.get(0).getMath_score() == 0)
+                mala++;
             else
-            if (stIndi.get(0).getAbsences_count() == 1)
-                una++;
+            if (stIndi.get(0).getMath_score() == 0.5)
+                regular++;
             else
-                masDeUna++;
+                buena++;
 
         }
 
-        total = masDeUna + una + ninguna;*/
+        total = mala + regular + buena;
 
         //una * 100 / total + rs.getString(R.string.signo)
-        tableFileOnePro.setText("Construccion");
-        tableFileTwoPor.setText("Construccion");
-        tableFileThreePor.setText("Construccion");
-
-
+        tableFileOnePro.setText(mala * 100 / total + rs.getString(R.string.signo));
+        tableFileTwoPor.setText(regular * 100 / total+rs.getString(R.string.signo));
+        tableFileThreePor.setText(buena * 100 / total + rs.getString(R.string.signo));
     }
 
     private void viewLayoutList(){

@@ -24,12 +24,16 @@
     <string name="indicatorFri">Convivencia</string>
     <string name="indicatorFriend">Proporciona la convivencia escolar de los alumnos.</string>
     <string name="indicatorFriendSub">En el bimestre.</string>
+    <string name="indicatorM">Matemáticas</string>
     <string name="indicatorMath">Proporciona la comprensión matemática de los alumnos</string>
     <string name="indicatorMathSb">En el bimestre</string>
+    <string name="indicatorP">Participación</string>
     <string name="indicatorPart">Proporciona la paticipación de los alumnos</string>
     <string name="indicatorPartSub">En el bimestre</string>
+    <string name="indicatorR">Lector</string>
     <string name="indicatorReading">Proporciona la compresión lectora de los alumnos</string>
     <string name="indicatorReadingSub">En el bimestre</string>
+    <string name="indicatorPer">Desemepeño</string>
     <string name="indicatorPerf">Proporciona el desempeño de los alumnos</string>
     <string name="indicatorPerfSub">En el bimestre</string>
 
@@ -46,6 +50,11 @@
 
     <string name="asisTitleEdit">Promedio de faltas</string>
     <string name="conviEdit">Promedio de convivencia</string>
+    <string name="deseEdit">Promedio de desempeño</string>
+    <string name="partEdit">Promedio de paticipación</string>
+    <string name="lecEdit">Promedio de comprensión lectora</string>
+    <string name="mateEdit">Promedio de comprensión matemática</string>
+
     <string name="titleTab">Alumnos</string>
     <string name="promedio">Poncentaje</string>
     <string name="tabMala">Mala</string>
