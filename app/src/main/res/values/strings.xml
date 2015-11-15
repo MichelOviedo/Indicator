@@ -23,7 +23,9 @@
     <string name="indicatorAsisSubTitle">Contidad de asistencias en el bimestre </string>
     <string name="indicatorFri">Convivencia</string>
     <string name="indicatorFriend">Proporciona la convivencia escolar de los alumnos.</string>
-    <string name="indicatorFriendSub">En el parcial.</string>
+    <string name="indicatorFriendSub">En el bimestre.</string>
+    <string name="indicatorMath">Proporciona la comprensión matemática de los alumnos</string>
+    <string name="indicatorMathSb">En el bimestre</string>
 
     <string name="espa">Español</string>
     <string name="mat">Matemáticas</string>
