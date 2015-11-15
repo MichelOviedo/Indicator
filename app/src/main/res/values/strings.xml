@@ -26,6 +26,13 @@
     <string name="indicatorFriendSub">En el bimestre.</string>
     <string name="indicatorMath">Proporciona la comprensión matemática de los alumnos</string>
     <string name="indicatorMathSb">En el bimestre</string>
+    <string name="indicatorPart">Proporciona la paticipación de los alumnos</string>
+    <string name="indicatorPartSub">En el bimestre</string>
+    <string name="indicatorReading">Proporciona la compresión lectora de los alumnos</string>
+    <string name="indicatorReadingSub">En el bimestre</string>
+    <string name="indicatorPerf">Proporciona el desempeño de los alumnos</string>
+    <string name="indicatorPerfSub">En el bimestre</string>
+
 
     <string name="espa">Español</string>
     <string name="mat">Matemáticas</string>
