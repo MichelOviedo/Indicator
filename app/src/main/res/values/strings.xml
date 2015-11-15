@@ -19,8 +19,11 @@
     <!-- Indicators -->
     <string name="name">Nombre del alumno</string>
     <string name="indicatorAbb">Faltas</string>
-    <string name="indicatorAsisTitle">Pronporciona las faltas de los alumnos</string>
+    <string name="indicatorAsisTitle">Pronporciona las faltas de los alumnos.</string>
     <string name="indicatorAsisSubTitle">Contidad de asistencias en el bimestre </string>
+    <string name="indicatorFri">Convivencia</string>
+    <string name="indicatorFriend">Proporciona la convivencia escolar de los alumnos.</string>
+    <string name="indicatorFriendSub">En el parcial.</string>
 
     <string name="espa">Español</string>
     <string name="mat">Matemáticas</string>
@@ -33,8 +36,12 @@
     <string name="titleMath">Mat.</string>
 
     <string name="asisTitleEdit">Promedio de faltas</string>
+    <string name="conviEdit">Promedio de convivencia</string>
     <string name="titleTab">Alumnos</string>
     <string name="promedio">Poncentaje</string>
+    <string name="tabMala">Mala</string>
+    <string name="tabReg">Regular</string>
+    <string name="tabBue">Buena</string>
     <string name="asiNinguno">Ninguna</string>
     <string name="asiUna">Una</string>
     <string name="asiMas">Mas de una</string>

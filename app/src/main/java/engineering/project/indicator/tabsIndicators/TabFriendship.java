@@ -84,8 +84,8 @@ public class TabFriendship extends Fragment {
         layoutId = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT);
         layoutTexto = new TableRow.LayoutParams(160,TableRow.LayoutParams.MATCH_PARENT);
 
-        type.setText(rs.getString(R.string.indicatorAsisTitle));
-        count.setText(rs.getString(R.string.indicatorAsisSubTitle) + "30");
+        type.setText(rs.getString(R.string.indicatorFriend));
+        count.setText(rs.getString(R.string.indicatorFriendSub));
 
         agregarCabecera();
         agregarFilasTabla();
@@ -102,12 +102,12 @@ public class TabFriendship extends Fragment {
         tableFileThreePor  = (TextView) view.findViewById(R.id.txvTableFileThreePor);
         titleEdit = (TextView) view.findViewById(R.id.txvTlitleEdit);
 
-        titleEdit.setText(rs.getString(R.string.asisTitleEdit));
+        titleEdit.setText(rs.getString(R.string.conviEdit));
         tableTitle.setText(rs.getString(R.string.titleTab));
         tablePorcentage.setText(rs.getString(R.string.promedio));
-        tableFileOne.setText(rs.getString(R.string.asiMas));
-        tableFileTwo.setText(rs.getString(R.string.asiUna));
-        tableFileThree.setText(rs.getString(R.string.asiNinguno));
+        tableFileOne.setText(rs.getString(R.string.tabMala));
+        tableFileTwo.setText(rs.getString(R.string.tabReg));
+        tableFileThree.setText(rs.getString(R.string.tabBue));
         tableFileOnePro.setText("");
         tableFileTwoPor.setText("");
         tableFileThreePor.setText("");
@@ -145,7 +145,7 @@ public class TabFriendship extends Fragment {
         txtId.setTextColor(Color.BLACK);
         txtId.setLayoutParams(layoutId);
 
-        txtNombre.setText(rs.getString(R.string.indicatorAbb));
+        txtNombre.setText(rs.getString(R.string.indicatorFri));
         txtNombre.setTextColor(Color.BLACK);
         txtNombre.setGravity(Gravity.CENTER_HORIZONTAL);
         txtNombre.setBackgroundResource(R.drawable.cabecera);
@@ -269,7 +269,7 @@ public class TabFriendship extends Fragment {
                         .equalTo("idGroup", p.getIdGroup())
                         .findAll();
 
-                view.get(0).setAbsences_count(0);
+                view.get(0).setFriendship_score(0);
                 realm.commitTransaction();
 
                 viewLayoutList();
@@ -313,27 +313,27 @@ public class TabFriendship extends Fragment {
         subContenedor.setVisibility(View.INVISIBLE);
 
         List<String> spinnerArray =  new ArrayList<String>();
-        spinnerArray.add("1");
-        spinnerArray.add("1");
-        spinnerArray.add("1");
+        spinnerArray.add("Mala");
+        spinnerArray.add("Buena");
+        spinnerArray.add("Regular");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 context, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         List<String> spi =  new ArrayList<String>();
-        spi.add("2");
-        spi.add("2");
-        spi.add("2");
+        spi.add("Regular");
+        spi.add("Buena");
+        spi.add("Mala");
         ArrayAdapter<String> ada = new ArrayAdapter<String>(
-                context, android.R.layout.simple_spinner_item, spinnerArray);
+                context, android.R.layout.simple_spinner_item, spi);
         ada.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         List<String> s =  new ArrayList<String>();
-        s.add("3");
-        s.add("3");
-        s.add("3");
+        s.add("Buena");
+        s.add("Regular");
+        s.add("Mala");
         ArrayAdapter<String> ad = new ArrayAdapter<String>(
-                context, android.R.layout.simple_spinner_item, spinnerArray);
+                context, android.R.layout.simple_spinner_item, s);
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         for (int x = 0; x < listStudent.size(); x++){
