@@ -22,6 +22,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
@@ -254,6 +255,11 @@ public class TabParticipation extends Fragment {
                         .equalTo("idGroup", p.getIdGroup())
                         .findAll();
 
+                if (view.get(0).getParticipation_score() == -1)
+                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indParti) + "'");
+                else
+                    goodJob(rs.getString(R.string.contentEdit) + " '"+ rs.getString(R.string.indParti) + "'");
+
                 view.get(0).setParticipation_score(1);
                 realm.commitTransaction();
 
@@ -266,15 +272,26 @@ public class TabParticipation extends Fragment {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                realm.beginTransaction();
-                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                        .equalTo("idGroup", p.getIdGroup())
-                        .findAll();
+                new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText(rs.getString(R.string.seguro))
+                        .setContentText(rs.getString(R.string.seguroContent))
+                        .setConfirmText(rs.getString(R.string.seguroSi))
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                realm.beginTransaction();
+                                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
+                                        .equalTo("idGroup", p.getIdGroup())
+                                        .findAll();
 
-                view.get(0).setParticipation_score(0);
-                realm.commitTransaction();
+                                view.get(0).setParticipation_score(0);
+                                realm.commitTransaction();
 
-                viewLayoutList();
+                                viewLayoutList();
+                            }
+                        })
+                        .setCancelText(rs.getString(R.string.seguroNo))
+                        .show();
             }
         });
 
@@ -304,7 +321,7 @@ public class TabParticipation extends Fragment {
 
         //una * 100 / total + rs.getString(R.string.signo)
         tableFileOnePro.setText(mala * 100 / total + rs.getString(R.string.signo));
-        tableFileTwoPor.setText(regular * 100 / total+rs.getString(R.string.signo));
+        tableFileTwoPor.setText(regular * 100 / total + rs.getString(R.string.signo));
         tableFileThreePor.setText(buena * 100 / total + rs.getString(R.string.signo));
     }
 
@@ -353,6 +370,22 @@ public class TabParticipation extends Fragment {
                 extIndicator.setAdapter(ad);
         }
     }
+
+    private void goodJob(String content){
+        new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(rs.getString(R.string.goodJob))
+                .setContentText(content)
+                .setConfirmText(rs.getString(R.string.next))
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                    }
+                })
+                .show();
+
+    }
+
     private void showLog(String log){
         Log.v("TabParicipation", log);
     }

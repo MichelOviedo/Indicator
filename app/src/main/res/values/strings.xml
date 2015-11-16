@@ -85,6 +85,23 @@
     <string name="construccion">Esta parte permanece en construcción. Disculpe las molestias que esto pueda ocasionar</string>
     <string name="faltaD">Aun no has proporcionado todos los campos...!</string>
 
+    <!-- Etiquetas sweet -->
+    <string name="goodJob">Buen trabajo!</string>
+    <string name="contentSave">Has guardado con éxito el indicador </string>
+    <string name="contentEdit">Has editado con éxito el indicador </string>
+    <string name="next">Seguir adelante!</string>
+    <string name="indAsistencia">Asistencia</string>
+    <string name="indDesempe">Desempeño</string>
+    <string name="indParti">Participación</string>
+    <string name="indConvi">Convivencia escolar</string>
+    <string name="indLect">Comprensión lectora</string>
+    <string name="indMate">Comprensión matemáticas</string>
+
+    <string name="seguro">¿Estas seguro?</string>
+    <string name="seguroContent">¿De querer editar este indicatodor?</string>
+    <string name="seguroSi">Si, lo estoy!</string>
+    <string name="seguroNo">NO!</string>
+
     <string-array name="menuDrawer">
         <item>Dejanos un comentario</item>
         <item>Cerrar Sesión</item>
