@@ -230,6 +230,7 @@ public class TabPerformance extends Fragment {
                     extIndicator = (Spinner) view.findViewById(x);
                     RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
                             .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("subject_id", p.getIdGroup())
                             .findAll();
 
                     showLog("Student: " + results.get(0).getPerformance_score());
@@ -302,6 +303,7 @@ public class TabPerformance extends Fragment {
         for (int x = 0; x < listStudent.size(); x++){
             RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
                     .equalTo("idStudent",listStudent.get(x).getId())
+                    .equalTo("subject_id", p.getIdGroup())
                     .findAll();
 
             if (stIndi.get(0).getPerformance_score() == 0)
@@ -353,6 +355,7 @@ public class TabPerformance extends Fragment {
         for (int x = 0; x < listStudent.size(); x++) {
             RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
                     .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("subject_id", p.getIdGroup())
                     .findAll();
 
             extIndicator = (Spinner) view.findViewById(x);

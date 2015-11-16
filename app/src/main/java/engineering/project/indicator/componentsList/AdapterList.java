@@ -130,14 +130,9 @@ public class AdapterList extends BaseExpandableListAdapter {
                 .equalTo("idGroup",key)
                 .findAll();
 
-
-            status.setBackgroundResource(R.drawable.noterror);
+        status.setBackgroundResource(R.drawable.fin);
 
         view.setTag(holder);
-
-
-
-
 
         hijo.setOnClickListener(new View.OnClickListener() {
             @Override

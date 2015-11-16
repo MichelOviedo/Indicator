@@ -11,6 +11,8 @@ public class Realm_students_indicator extends RealmObject {
     private double participation_score, performance_score,
     reading_score,math_score,friendship_score;
     private String createDate;
+    private int idStudent;
+    private String  subject_id;
 
     public String getCreateDate() {
         return createDate;
@@ -20,13 +22,11 @@ public class Realm_students_indicator extends RealmObject {
         this.createDate = createDate;
     }
 
-    private int idStudent, subject_id;
-
-    public int getSubject_id() {
+    public String getSubject_id() {
         return subject_id;
     }
 
-    public void setSubject_id(int subject_id) {
+    public void setSubject_id(String subject_id) {
         this.subject_id = subject_id;
     }
 

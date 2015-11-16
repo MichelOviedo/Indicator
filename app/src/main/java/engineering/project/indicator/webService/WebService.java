@@ -184,10 +184,8 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                 grades.setTitle(jsonGrade.getString("title"));
                                 grades.setGradeNumbre(jsonGrade.getInt("grade_number"));
 
-                                allocations.setWhere(grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle());
-                                showLogError("" + grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle());
-                                new WebService(context, "api/students/in-group/" + jsonObject.getInt("id") ,
-                                        grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle() )
+                                new WebService(context, "api/students/in-group/" + jsonGroup.getInt("id") ,
+                                        grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle() + "" )
                                         .insertStudent();
                             }
 
@@ -265,7 +263,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     indicator.setParticipation_score(-1);
                                     indicator.setPerformance_score(-1);
                                     indicator.setIdStudent(jsonStudent.getInt("id"));
-                                    indicator.setSubject_id(jsonStudent.getInt("school_group_id"));
+                                    indicator.setSubject_id(ID_STUDENT);
 
                                     showLogError("Este es el id de la viewTab: "  + ID_STUDENT);
                                     Realm_viewTables viewTables = realm.createObject(Realm_viewTables.class);

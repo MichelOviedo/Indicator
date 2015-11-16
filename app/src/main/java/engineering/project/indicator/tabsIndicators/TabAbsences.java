@@ -89,7 +89,7 @@ public class TabAbsences extends Fragment {
         layoutTexto = new TableRow.LayoutParams(160,TableRow.LayoutParams.MATCH_PARENT);
 
         type.setText(rs.getString(R.string.indicatorAsisTitle));
-        count.setText(rs.getString(R.string.indicatorAsisSubTitle) + "30");
+        count.setText(rs.getString(R.string.indicatorAsisSubTitle) + " 30");
 
         agregarCabecera();
         agregarFilasTabla();
@@ -126,9 +126,6 @@ public class TabAbsences extends Fragment {
         else{
             viewLatoutEdit();
         }
-
-
-
     }
 
     //<editor-fold desc="Tabla dinamica">
@@ -225,6 +222,7 @@ public class TabAbsences extends Fragment {
                     extIndicator = (EditText) view.findViewById(x);
                     RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
                             .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("subject_id", p.getIdGroup())
                             .findAll();
 
                     if (extIndicator.getText().toString().equalsIgnoreCase(""))
@@ -290,6 +288,7 @@ public class TabAbsences extends Fragment {
         for (int x = 0; x < listStudent.size(); x++){
             RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
                     .equalTo("idStudent",listStudent.get(x).getId())
+                    .equalTo("subject_id", p.getIdGroup())
                     .findAll();
 
             if (stIndi.get(0).getAbsences_count() == 0)
@@ -318,6 +317,7 @@ public class TabAbsences extends Fragment {
         for (int x = 0; x < listStudent.size(); x++){
             RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
                     .equalTo("idStudent",listStudent.get(x).getId())
+                    .equalTo("subject_id", p.getIdGroup())
                     .findAll();
 
             extIndicator = (EditText) view.findViewById(x);
@@ -332,6 +332,7 @@ public class TabAbsences extends Fragment {
 
         }
     }
+
     private void goodJob(String content){
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
