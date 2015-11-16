@@ -1,6 +1,10 @@
 package engineering.project.indicator;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,10 +55,24 @@ public class MainActivity extends Activity {
     String[] tagTitles;
     ListView drawerList;
 
+
+    public static final String AUTHORITY = "engineering.project.indicator.sync.provider";
+    public static final String ACCOUNT_TYPE = "www.evaluafacil.com.mx";
+    public static final String ACCOUNT = "Evalua Facil";
+    Account mAccount;
+    ContentResolver mResolver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        showLog("1");
+        mAccount = CreateSyncAccount(this);
+        showLog("2");
+        mResolver = getContentResolver();
+        showLog("3");
+        mResolver.setSyncAutomatically(mAccount, AUTHORITY, true);
 
         builder();
 
@@ -260,6 +278,20 @@ public class MainActivity extends Activity {
 
     }
     //</editor-fold>
+
+    public static Account CreateSyncAccount(Context context) {
+        Account newAccount = new Account(
+                ACCOUNT, ACCOUNT_TYPE);
+        // Get an instance of the Android account manager
+        AccountManager accountManager =
+                (AccountManager) context.getSystemService(
+                        ACCOUNT_SERVICE);
+
+        if (accountManager.addAccountExplicitly(newAccount, null, null)) {}
+        else {}
+
+        return newAccount;
+    }
 
     private void showLog(String log){
         Log.v("MainActivity",log);
