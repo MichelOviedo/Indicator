@@ -287,7 +287,7 @@ public class TabReading extends Fragment {
 
                                 view.get(0).setReading_score(0);
                                 realm.commitTransaction();
-
+                                sDialog.dismiss();
                                 viewLayoutList();
                             }
                         })

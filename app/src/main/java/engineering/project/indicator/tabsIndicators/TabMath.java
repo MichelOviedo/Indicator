@@ -285,7 +285,7 @@ public class TabMath extends Fragment {
 
                                 view.get(0).setMath_score(0);
                                 realm.commitTransaction();
-
+                                sDialog.dismiss();
                                 viewLayoutList();
                             }
                         })

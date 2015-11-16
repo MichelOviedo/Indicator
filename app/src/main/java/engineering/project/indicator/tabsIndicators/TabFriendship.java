@@ -284,7 +284,7 @@ public class TabFriendship extends Fragment {
 
                                 view.get(0).setFriendship_score(0);
                                 realm.commitTransaction();
-
+                                sDialog.dismiss();
                                 viewLayoutList();
                             }
                         })

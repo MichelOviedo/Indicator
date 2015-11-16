@@ -283,7 +283,7 @@ public class TabPerformance extends Fragment {
 
                                 view.get(0).setPerformance_score(0);
                                 realm.commitTransaction();
-
+                                sDialog.dismiss();
                                 viewLayoutList();
                             }
                         })

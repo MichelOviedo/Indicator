@@ -271,7 +271,7 @@ public class TabAbsences extends Fragment {
 
                                 view.get(0).setAbsences_count(0);
                                 realm.commitTransaction();
-
+                                sDialog.dismiss();
                                 viewLayoutList();
                             }
                         })

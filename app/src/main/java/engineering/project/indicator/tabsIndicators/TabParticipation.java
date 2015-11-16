@@ -286,7 +286,7 @@ public class TabParticipation extends Fragment {
 
                                 view.get(0).setParticipation_score(0);
                                 realm.commitTransaction();
-
+                                sDialog.dismiss();
                                 viewLayoutList();
                             }
                         })
