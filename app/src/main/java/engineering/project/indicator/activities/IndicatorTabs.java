@@ -1,5 +1,6 @@
 package engineering.project.indicator.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.tabsIndicators.TabAbsences;
@@ -122,6 +125,20 @@ public class IndicatorTabs extends AppCompatActivity {
             tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
             tabLayout.getTabAt(4).setCustomView(tabFour);
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+
+            Intent i = new Intent(this, MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+
+            return false;
+        }else
+        return super.onKeyDown(keyCode, event);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

@@ -1,6 +1,7 @@
 package engineering.project.indicator.tabsIndicators;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,11 +22,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
+import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_students_indicator;
 import engineering.project.indicator.structureRealm.Realm_viewTables;
@@ -239,10 +243,42 @@ public class TabAbsences extends Fragment {
                         .equalTo("idGroup", p.getIdGroup())
                         .findAll();
 
-                if (view.get(0).getAbsences_count() == -1)
-                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) + "'");
+                StringTokenizer token = new StringTokenizer(p.getIdGroup(), ", ");
+                token.nextToken();
+                String materia = token.nextToken().toString();
+
+                RealmResults<Realm_progress> pro = realm.where(Realm_progress.class)
+                        .equalTo("groupName", p.getIdGroup())
+                        .findAll();
+
+                int goodJob = view.get(0).getAbsences_count();
+                view.get(0).setAbsences_count(1);
+
+                if (view.get(0).getAbsences_count() >= 0 && view.get(0).getFriendship_score() >= 0 &&
+                        view.get(0).getPerformance_score() >= 0 && view.get(0).getParticipation_score() >= 0)
+
+                    if (!materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
+                            !materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)))
+                        pro.get(0).setFinish(1);
+                    else if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
+                            view.get(0).getMath_score() >= 0)
+                        pro.get(0).setFinish(1);
+                    else if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
+                            view.get(0).getReading_score() >= 0)
+                        pro.get(0).setFinish(1);
+                    else
+                        pro.get(0).setFinish(0);
+
                 else
-                    goodJob(rs.getString(R.string.contentEdit) + " '"+ rs.getString(R.string.indAsistencia) + "'");
+                    pro.get(0).setFinish(0);
+
+                showLog(pro.size() + " EN TABAS FINAL: " + pro.get(0).getFinish());
+
+                if (goodJob == -1)
+                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) + "'", pro.get(0).getFinish());
+                else
+                    goodJob(rs.getString(R.string.contentEdit) + " '" + rs.getString(R.string.indAsistencia) + "'", pro.get(0).getFinish());
+
 
                 view.get(0).setAbsences_count(1);
                 realm.commitTransaction();
@@ -333,7 +369,7 @@ public class TabAbsences extends Fragment {
         }
     }
 
-    private void goodJob(String content){
+    private void goodJob(String content, final int finish){
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -341,6 +377,8 @@ public class TabAbsences extends Fragment {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
+                        if (finish > 0)
+                            loadList();
                         sDialog.dismissWithAnimation();
                     }
                 })
@@ -348,6 +386,14 @@ public class TabAbsences extends Fragment {
 
     }
 
+
+
+    private void loadList(){
+        Intent i = new Intent(context, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(i);
+    }
     private void showLog(String log){
         Log.v("TabAbsences",log);
     }

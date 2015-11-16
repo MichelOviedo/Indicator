@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 import engineering.project.indicator.R;
 import engineering.project.indicator.activities.IndicatorTabs;
 import engineering.project.indicator.preferences.Preferences;
+import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -92,9 +93,24 @@ public class AdapterList extends BaseExpandableListAdapter {
 
         TextView title = (TextView) view.findViewById(R.id.list_item_text_view);
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.pBar);
+        String valor = getGroup(groupPosition).toString();
+        title.setText(valor);
 
-        title.setText(getGroup(groupPosition).toString());
-        progressBar.setProgress(70);
+        StringTokenizer st = new StringTokenizer(valor, context.getResources().getString(R.string.grade));
+        String grade = st.nextToken().toString();
+        int g = Integer.parseInt(grade);
+
+        realm = Realm.getInstance(context);
+        RealmResults<Realm_progress> pro = realm.where(Realm_progress.class)
+                .equalTo("number",g)
+                .findAll();
+
+        int contador = 0;
+        for (int x = 0; x < pro.size(); x++)
+            if (pro.get(x).getFinish() == 1)
+                contador++;
+
+        progressBar.setProgress(contador * 100 / pro.size());
         view.setTag(holder);
 
         return view;
@@ -141,15 +157,15 @@ public class AdapterList extends BaseExpandableListAdapter {
                     !materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)))
                 status.setBackgroundResource(R.mipmap.good);
             else
-                if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
-                        viewTables.get(0).getMath_score() >= 0)
-                    status.setBackgroundResource(R.mipmap.good);
-                else
-                    if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
-                            viewTables.get(0).getReading_score()     >= 0)
-                        status.setBackgroundResource(R.mipmap.good);
-                    else
-                        status.setBackgroundResource(R.mipmap.cross);
+            if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
+                    viewTables.get(0).getMath_score() >= 0)
+                status.setBackgroundResource(R.mipmap.good);
+            else
+            if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
+                    viewTables.get(0).getReading_score()     >= 0)
+                status.setBackgroundResource(R.mipmap.good);
+            else
+                status.setBackgroundResource(R.mipmap.cross);
 
         else
             status.setBackgroundResource(R.mipmap.cross);
@@ -159,7 +175,7 @@ public class AdapterList extends BaseExpandableListAdapter {
         hijo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               p.setIdGroup(key);
+                p.setIdGroup(key);
                 Intent i = new Intent(context, IndicatorTabs.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);

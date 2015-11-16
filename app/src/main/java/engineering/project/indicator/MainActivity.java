@@ -32,6 +32,7 @@ import engineering.project.indicator.structureModel.ModelTeacher;
 import engineering.project.indicator.structureRealm.Realm_allocations;
 import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
+import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_students_indicator;
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
         else{
             getReferencesUser();
             loadList();
-            }
+        }
 
 
     }
@@ -159,16 +160,16 @@ public class MainActivity extends Activity {
 
     private void getReferencesUser(){
         RealmResults<Realm_faculty_member> teacher = realm.where(Realm_faculty_member.class)
-        .notEqualTo("userId",0)
-        .findAll();
+                .notEqualTo("userId",0)
+                .findAll();
 
         RealmResults<Realm_user> user = realm.where(Realm_user.class)
-        .notEqualTo("id",0)
-        .findAll();
+                .notEqualTo("id",0)
+                .findAll();
 
         if (teacher.size() > 0 && user.size() > 0)
             modelTeacher = new ModelTeacher(teacher.get(0).getTitle(), teacher.get(0).getFisrtName(),teacher.get(0).getLastName(),
-                                            user.get(0).getUsername(),teacher.get(0).getEmail(),user.get(0).getRole(),teacher.get(0).getContact_number());
+                    user.get(0).getUsername(),teacher.get(0).getEmail(),user.get(0).getRole(),teacher.get(0).getContact_number());
 
         name.setText(modelTeacher.getFisrtName() + " " + modelTeacher.getLastName());
         this.user.setText("Usuario: " + modelTeacher.getUser());
@@ -189,6 +190,7 @@ public class MainActivity extends Activity {
         realm.clear(Realm_allocations.class);
         realm.clear(Realm_faculty_member.class);
         realm.clear(Realm_grades.class);
+        realm.clear(Realm_progress.class);
         realm.clear(Realm_school_groups.class);
         realm.clear(Realm_students.class);
         realm.clear(Realm_students_indicator.class);
