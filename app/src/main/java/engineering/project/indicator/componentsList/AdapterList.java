@@ -139,20 +139,20 @@ public class AdapterList extends BaseExpandableListAdapter {
 
             if (! materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
                     !materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)))
-                status.setBackgroundResource(R.drawable.fin);
+                status.setBackgroundResource(R.mipmap.good);
             else
                 if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
                         viewTables.get(0).getMath_score() >= 0)
-                    status.setBackgroundResource(R.drawable.fin);
+                    status.setBackgroundResource(R.mipmap.good);
                 else
                     if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
                             viewTables.get(0).getReading_score()     >= 0)
-                        status.setBackgroundResource(R.drawable.fin);
+                        status.setBackgroundResource(R.mipmap.good);
                     else
-                        status.setBackgroundResource(R.drawable.noterror);
+                        status.setBackgroundResource(R.mipmap.cross);
 
         else
-            status.setBackgroundResource(R.drawable.noterror);
+            status.setBackgroundResource(R.mipmap.cross);
 
         view.setTag(holder);
 
