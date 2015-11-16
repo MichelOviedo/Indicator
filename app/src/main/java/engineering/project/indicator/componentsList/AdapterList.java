@@ -114,8 +114,6 @@ public class AdapterList extends BaseExpandableListAdapter {
             view = inflater.inflate(R.layout.list_child, viewGroup, false);
         }
 
-
-
         TextView textView = (TextView) view.findViewById(R.id.item_child);
         textView.setText(mParent.get(groupPosition).getArrayChildren().get(childPosition));
         LinearLayout hijo = (LinearLayout) view.findViewById(R.id.lnlChild);
@@ -123,14 +121,38 @@ public class AdapterList extends BaseExpandableListAdapter {
 
         final String toast = textView.getText().toString();
         StringTokenizer st = new StringTokenizer(toast, view.getResources().getString(R.string.grade));
-        final String key = st.nextToken() + ""+ st.nextToken();
+        String k = st.nextToken() + "";
+        String k2 = st.nextToken();
+        final String key = k + k2;
+
+        StringTokenizer sToken = new StringTokenizer(k2, ", ");
+        sToken.nextToken();
+        String materia = sToken.nextToken();
 
         realm = Realm.getInstance(context);
         RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
                 .equalTo("idGroup",key)
                 .findAll();
 
-        status.setBackgroundResource(R.drawable.fin);
+        if (viewTables.get(0).getAbsences_count() >= 0 && viewTables.get(0).getFriendship_score()>= 0 &&
+                viewTables.get(0).getPerformance_score() >= 0 && viewTables.get(0).getParticipation_score() >= 0)
+
+            if (! materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
+                    !materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)))
+                status.setBackgroundResource(R.drawable.fin);
+            else
+                if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
+                        viewTables.get(0).getMath_score() >= 0)
+                    status.setBackgroundResource(R.drawable.fin);
+                else
+                    if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
+                            viewTables.get(0).getReading_score()     >= 0)
+                        status.setBackgroundResource(R.drawable.fin);
+                    else
+                        status.setBackgroundResource(R.drawable.noterror);
+
+        else
+            status.setBackgroundResource(R.drawable.noterror);
 
         view.setTag(holder);
 

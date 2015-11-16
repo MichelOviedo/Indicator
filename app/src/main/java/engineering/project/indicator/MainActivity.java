@@ -67,11 +67,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        showLog("1");
         mAccount = CreateSyncAccount(this);
-        showLog("2");
         mResolver = getContentResolver();
-        showLog("3");
         mResolver.setSyncAutomatically(mAccount, AUTHORITY, true);
 
         builder();
