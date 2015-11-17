@@ -28,7 +28,6 @@ import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureRealm.Realm_allocations;
 import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
-import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_students_indicator;
@@ -266,7 +265,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     indicator.setIdStudent(jsonStudent.getInt("id"));
                                     indicator.setSubject_id(ID_STUDENT);
 
-                                    showLog("1");
+                                   /* showLog("1");
                                     showLog("ID: " + ID_STUDENT.substring(0, 1));
                                     String num = ID_STUDENT.substring(0,1);
                                     showLog("2");
@@ -275,7 +274,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     Realm_progress p = realm.createObject(Realm_progress.class);
                                     p.setGroupName(ID_STUDENT);
                                     p.setNumber(number);
-                                    p.setFinish(0);
+                                    p.setFinish(0);*/
 
 
                                     showLogError("Este es el id de la viewTab: " + ID_STUDENT);

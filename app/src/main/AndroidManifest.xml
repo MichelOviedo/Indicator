@@ -62,8 +62,7 @@
         </activity>
         <activity
             android:name=".activities.IndicatorTabs"
-            android:label="@string/title_activity_indicator_tabs"
-            android:noHistory="true">
+            android:label="@string/title_activity_indicator_tabs" >
         </activity>
     </application>
 

@@ -22,14 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
-import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_students_indicator;
 import engineering.project.indicator.structureRealm.Realm_viewTables;
@@ -243,16 +241,15 @@ public class TabAbsences extends Fragment {
                         .equalTo("idGroup", p.getIdGroup())
                         .findAll();
 
-                StringTokenizer token = new StringTokenizer(p.getIdGroup(), ", ");
+                int goodJob = view.get(0).getAbsences_count();
+                view.get(0).setAbsences_count(1);
+               /* StringTokenizer token = new StringTokenizer(p.getIdGroup(), ", ");
                 token.nextToken();
                 String materia = token.nextToken().toString();
 
                 RealmResults<Realm_progress> pro = realm.where(Realm_progress.class)
                         .equalTo("groupName", p.getIdGroup())
                         .findAll();
-
-                int goodJob = view.get(0).getAbsences_count();
-                view.get(0).setAbsences_count(1);
 
                 if (view.get(0).getAbsences_count() >= 0 && view.get(0).getFriendship_score() >= 0 &&
                         view.get(0).getPerformance_score() >= 0 && view.get(0).getParticipation_score() >= 0)
@@ -272,12 +269,12 @@ public class TabAbsences extends Fragment {
                 else
                     pro.get(0).setFinish(0);
 
-                showLog(pro.size() + " EN TABAS FINAL: " + pro.get(0).getFinish());
+                showLog(pro.size() + " EN TABAS FINAL: " + pro.get(0).getFinish());*/
 
                 if (goodJob == -1)
-                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) + "'", pro.get(0).getFinish());
+                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) );
                 else
-                    goodJob(rs.getString(R.string.contentEdit) + " '" + rs.getString(R.string.indAsistencia) + "'", pro.get(0).getFinish());
+                    goodJob(rs.getString(R.string.contentEdit) + " '" + rs.getString(R.string.indAsistencia));
 
 
                 view.get(0).setAbsences_count(1);
@@ -363,13 +360,10 @@ public class TabAbsences extends Fragment {
                 extIndicator.setText("0");
             else
                 extIndicator.setText(stIndi.get(0).getAbsences_count()+"");
-
-
-
         }
     }
 
-    private void goodJob(String content, final int finish){
+    private void goodJob(String content){
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -377,8 +371,6 @@ public class TabAbsences extends Fragment {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
-                        if (finish > 0)
-                            loadList();
                         sDialog.dismissWithAnimation();
                     }
                 })
@@ -386,14 +378,13 @@ public class TabAbsences extends Fragment {
 
     }
 
-
-
     private void loadList(){
         Intent i = new Intent(context, MainActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+       // i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
     }
+
     private void showLog(String log){
         Log.v("TabAbsences",log);
     }

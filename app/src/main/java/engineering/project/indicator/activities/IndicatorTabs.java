@@ -132,7 +132,7 @@ public class IndicatorTabs extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK){
 
             Intent i = new Intent(this, MainActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
 

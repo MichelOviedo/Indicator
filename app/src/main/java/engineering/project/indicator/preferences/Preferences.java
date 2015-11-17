@@ -62,8 +62,8 @@ public class Preferences {
     }
 
     public void clear(){
-        SharedPreferences settings = context.getSharedPreferences(INDICATOR, Context.MODE_PRIVATE);
-        settings.edit().clear().commit();
+       e.clear();
+        com(e);
     }
     public String getTokenType(){
         return p.getString("TokenType","null token");

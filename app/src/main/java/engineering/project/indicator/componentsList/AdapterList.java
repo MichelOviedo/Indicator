@@ -19,7 +19,6 @@ import java.util.StringTokenizer;
 import engineering.project.indicator.R;
 import engineering.project.indicator.activities.IndicatorTabs;
 import engineering.project.indicator.preferences.Preferences;
-import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -100,7 +99,7 @@ public class AdapterList extends BaseExpandableListAdapter {
         String grade = st.nextToken().toString();
         int g = Integer.parseInt(grade);
 
-        realm = Realm.getInstance(context);
+        /*realm = Realm.getInstance(context);
         RealmResults<Realm_progress> pro = realm.where(Realm_progress.class)
                 .equalTo("number",g)
                 .findAll();
@@ -108,9 +107,9 @@ public class AdapterList extends BaseExpandableListAdapter {
         int contador = 0;
         for (int x = 0; x < pro.size(); x++)
             if (pro.get(x).getFinish() == 1)
-                contador++;
+                contador++;*/
 
-        progressBar.setProgress(contador * 100 / pro.size());
+        progressBar.setProgress(50 * 100 / 100);
         view.setTag(holder);
 
         return view;
