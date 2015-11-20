@@ -15,18 +15,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
+import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.tabsIndicators.TabAbsences;
-import engineering.project.indicator.tabsIndicators.TabFriendship;
-import engineering.project.indicator.tabsIndicators.TabMath;
-import engineering.project.indicator.tabsIndicators.TabParticipation;
-import engineering.project.indicator.tabsIndicators.TabPerformance;
-import engineering.project.indicator.tabsIndicators.TabReading;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class IndicatorTabs extends AppCompatActivity {
 
@@ -65,9 +62,15 @@ public class IndicatorTabs extends AppCompatActivity {
     }
 
     private void getMatter(){
-        StringTokenizer st = new StringTokenizer(p.getIdGroup(), ", ");
-        st.nextToken();
-        p.setMatter(st.nextToken().toString());
+        RealmResults<Realm_allocations> allocation = realm.where(Realm_allocations.class)
+                .equalTo("id",p.getAllocation())
+                .findAll();
+        RealmResults<Realm_subjects> sub = realm.where(Realm_subjects.class)
+                .equalTo("id", allocation.get(0).getSubjectId())
+                .findAll();
+
+
+        p.setMatter(sub.get(0).getTitle());
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -75,16 +78,21 @@ public class IndicatorTabs extends AppCompatActivity {
 
 
         adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
-        adapter.addFrag(new TabFriendship(), getResources().getString(R.string.titleCon));
-        adapter.addFrag(new TabPerformance(), getResources().getString(R.string.titleDesemp));
-        adapter.addFrag(new TabParticipation(), getResources().getString(R.string.titlePart));
+        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
+        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
+        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
+        //adapter.addFrag(new TabFriendship(), getResources().getString(R.string.titleCon));
+        //adapter.addFrag(new TabPerformance(), getResources().getString(R.string.titleDesemp));
+        //adapter.addFrag(new TabParticipation(), getResources().getString(R.string.titlePart));
 
         if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.mat)))
-            adapter.addFrag(new TabMath(), getResources().getString(R.string.titleMath));
+            //adapter.addFrag(new TabMath(), getResources().getString(R.string.titleMath));
+            adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
 
 
         if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.espa)))
-            adapter.addFrag(new TabReading(), getResources().getString(R.string.titleEspa));
+            //adapter.addFrag(new TabReading(), getResources().getString(R.string.titleEspa));
+            adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
 
         viewPager.setAdapter(adapter);
     }
@@ -171,7 +179,7 @@ public class IndicatorTabs extends AppCompatActivity {
     }
     @Override
     protected void onDestroy() {
-        p.setIdGroup("Destroy");
+        p.setAllocation(0);
         super.onDestroy();
     }
 }

@@ -6,7 +6,12 @@ import io.realm.RealmObject;
  * Created by EduardoMichel on 07/11/2015.
  */
 public class Realm_subjects extends RealmObject {
-    private int id, idGrade;
+
+    /**
+     * TEC
+     * Tecnologias
+     */
+    private int id, idAllocation, idGrade;
     private String abbrevition, title;
 
     public String getAbbrevition() {
@@ -25,12 +30,12 @@ public class Realm_subjects extends RealmObject {
         this.id = id;
     }
 
-    public int getIdGrade() {
-        return idGrade;
+    public int getIdAllocation() {
+        return idAllocation;
     }
 
-    public void setIdGrade(int idGrade) {
-        this.idGrade = idGrade;
+    public void setIdAllocation(int idAllocation) {
+        this.idAllocation = idAllocation;
     }
 
     public String getTitle() {
@@ -39,5 +44,13 @@ public class Realm_subjects extends RealmObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getIdGrade() {
+        return idGrade;
+    }
+
+    public void setIdGrade(int idGrade) {
+        this.idGrade = idGrade;
     }
 }

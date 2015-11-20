@@ -2,35 +2,24 @@ package engineering.project.indicator.tabsIndicators;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
-import engineering.project.indicator.structureRealm.Realm_students;
-import engineering.project.indicator.structureRealm.Realm_students_indicator;
-import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by EduardoMichel on 13/11/2015.
@@ -62,12 +51,12 @@ public class TabPerformance extends Fragment {
         view = inflater.inflate(R.layout.content_tab, container, false);
         context = container.getContext();
 
-        builder();
-        userButton();
+       // builder();
+       // userButton();
 
         return view;
     }
-
+/*
     private void builder() {
 
         content = (RelativeLayout) view.findViewById(R.id.rltContentViewTable);
@@ -176,7 +165,6 @@ public class TabPerformance extends Fragment {
             student.setLastName(studentses.get(x).getLastName());
             student.setFirstName(studentses.get(x).getFirstName());
             student.setMotherName(studentses.get(x).getMotherName());
-            student.setIdInformal(studentses.get(x).getIdInformal());
             student.setGender(studentses.get(x).getGender());
             student.setGruopId(studentses.get(x).getGruopId());
 
@@ -392,5 +380,5 @@ public class TabPerformance extends Fragment {
 
     private void messageToast(String toast) {
         Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
-    }
+    }*/
 }

@@ -3,6 +3,7 @@ package engineering.project.indicator.componentsList;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +15,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import engineering.project.indicator.R;
 import engineering.project.indicator.activities.IndicatorTabs;
 import engineering.project.indicator.preferences.Preferences;
-import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by EduardoMichel on 08/11/2015.
@@ -59,6 +57,14 @@ public class AdapterList extends BaseExpandableListAdapter {
         return mParent.get(i).getTitle();
     }
 
+    public Object getPorcent(int i) {
+        return mParent.get(i).getPorcentaje();
+    }
+
+    public Object getAllocation(int i){
+        return  null;
+    }
+
     @Override
     //gets the name of each item
     public Object getChild(int i, int i1) {
@@ -81,7 +87,6 @@ public class AdapterList extends BaseExpandableListAdapter {
     }
 
     @Override
-    //in this method you must set the text to see the parent/group on the list
     public View getGroupView(int groupPosition, boolean b, View view, ViewGroup viewGroup) {
 
         ViewHolder holder = new ViewHolder();
@@ -92,24 +97,16 @@ public class AdapterList extends BaseExpandableListAdapter {
 
         TextView title = (TextView) view.findViewById(R.id.list_item_text_view);
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.pBar);
-        String valor = getGroup(groupPosition).toString();
-        title.setText(valor);
 
-        StringTokenizer st = new StringTokenizer(valor, context.getResources().getString(R.string.grade));
-        String grade = st.nextToken().toString();
-        int g = Integer.parseInt(grade);
+        title.setText(getGroup(groupPosition).toString());
+        int porcentaje = 0;
+        try{
+            porcentaje = Integer.parseInt(getPorcent(groupPosition).toString());
+        }catch(Exception e){
+            Log.e("AdapterList","Error al querer convertir la variable de porcentaje");
+        }
 
-        /*realm = Realm.getInstance(context);
-        RealmResults<Realm_progress> pro = realm.where(Realm_progress.class)
-                .equalTo("number",g)
-                .findAll();
-
-        int contador = 0;
-        for (int x = 0; x < pro.size(); x++)
-            if (pro.get(x).getFinish() == 1)
-                contador++;*/
-
-        progressBar.setProgress(50 * 100 / 100);
+        progressBar.setProgress(porcentaje);
         view.setTag(holder);
 
         return view;
@@ -129,43 +126,17 @@ public class AdapterList extends BaseExpandableListAdapter {
             view = inflater.inflate(R.layout.list_child, viewGroup, false);
         }
 
+        ArrayChildren arrayChildren = mParent.get(groupPosition).getArrayChildren().get(childPosition);
+
         TextView textView = (TextView) view.findViewById(R.id.item_child);
-        textView.setText(mParent.get(groupPosition).getArrayChildren().get(childPosition));
+        textView.setText(arrayChildren.getTitle());
         LinearLayout hijo = (LinearLayout) view.findViewById(R.id.lnlChild);
         ImageView status = (ImageView) view.findViewById(R.id.imvStatus);
 
-        final String toast = textView.getText().toString();
-        StringTokenizer st = new StringTokenizer(toast, view.getResources().getString(R.string.grade));
-        String k = st.nextToken() + "";
-        String k2 = st.nextToken();
-        final String key = k + k2;
+        final int allocation = arrayChildren.getIdAllocation();
 
-        StringTokenizer sToken = new StringTokenizer(k2, ", ");
-        sToken.nextToken();
-        String materia = sToken.nextToken();
-
-        realm = Realm.getInstance(context);
-        RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
-                .equalTo("idGroup",key)
-                .findAll();
-
-        if (viewTables.get(0).getAbsences_count() >= 0 && viewTables.get(0).getFriendship_score()>= 0 &&
-                viewTables.get(0).getPerformance_score() >= 0 && viewTables.get(0).getParticipation_score() >= 0)
-
-            if (! materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
-                    !materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)))
-                status.setBackgroundResource(R.mipmap.good);
-            else
-            if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
-                    viewTables.get(0).getMath_score() >= 0)
-                status.setBackgroundResource(R.mipmap.good);
-            else
-            if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
-                    viewTables.get(0).getReading_score()     >= 0)
-                status.setBackgroundResource(R.mipmap.good);
-            else
-                status.setBackgroundResource(R.mipmap.cross);
-
+        if (arrayChildren.getPhoto() == 1)
+            status.setBackgroundResource(R.mipmap.good);
         else
             status.setBackgroundResource(R.mipmap.cross);
 
@@ -174,7 +145,7 @@ public class AdapterList extends BaseExpandableListAdapter {
         hijo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                p.setIdGroup(key);
+                p.setAllocation(allocation);
                 Intent i = new Intent(context, IndicatorTabs.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);

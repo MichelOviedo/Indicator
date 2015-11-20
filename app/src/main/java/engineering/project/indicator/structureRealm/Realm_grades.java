@@ -6,7 +6,11 @@ import io.realm.RealmObject;
  * Created by EduardoMichel on 07/11/2015.
  */
 public class Realm_grades extends RealmObject {
-
+    /***
+     * ID del grade
+     * Numero de grado
+     * totle 1 Primaria
+     */
     private int id, gradeNumbre;
     private String title;
 

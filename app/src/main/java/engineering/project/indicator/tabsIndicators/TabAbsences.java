@@ -28,9 +28,10 @@ import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
+import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
+import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
-import engineering.project.indicator.structureRealm.Realm_students_indicator;
-import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -118,16 +119,17 @@ public class TabAbsences extends Fragment {
         tableFileTwoPor.setText("");
         tableFileThreePor.setText("");
 
-
-        RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
-                .equalTo("idGroup",p.getIdGroup())
+        RealmResults<Realm_evaluation_indicator> evaluation = realm.where(Realm_evaluation_indicator.class)
+                .equalTo("idIndicator", 1)
+                .equalTo("idAllocation",p.getAllocation())
                 .findAll();
-        if (viewTables.get(0).getAbsences_count() <= 0) {
-           viewLayoutList();
-        }
-        else{
+
+
+        if (evaluation.size() > 0)
             viewLatoutEdit();
-        }
+        else
+            viewLayoutList();
+
     }
 
     //<editor-fold desc="Tabla dinamica">
@@ -162,8 +164,15 @@ public class TabAbsences extends Fragment {
     public void agregarFilasTabla() {
         listStudent = new ArrayList<ModelStudent>();
         ModelStudent student;
+
+        RealmResults<Realm_allocations> all = realm.where(Realm_allocations.class)
+                .equalTo("id", p.getAllocation())
+                .findAll();
+        RealmResults<Realm_school_groups> group = realm.where(Realm_school_groups.class)
+                .equalTo("id", all.get(0).getGroupId())
+                .findAll();
         RealmResults<Realm_students> studentses = realm.where(Realm_students.class)
-                .equalTo("idInformal", p.getIdGroup())
+                .equalTo("gruopId", group.get(0).getId())
                 .findAll();
 
         for (int x = 0; x < studentses.size(); x++) {
@@ -172,7 +181,6 @@ public class TabAbsences extends Fragment {
             student.setLastName(studentses.get(x).getLastName());
             student.setFirstName(studentses.get(x).getFirstName());
             student.setMotherName(studentses.get(x).getMotherName());
-            student.setIdInformal(studentses.get(x).getIdInformal());
             student.setGender(studentses.get(x).getGender());
             student.setGruopId(studentses.get(x).getGruopId());
 
@@ -210,78 +218,89 @@ public class TabAbsences extends Fragment {
     }
     //</editor-fold>
 
+    int isFinish = 0;
+
     private void userButton(){
         save.setOnClickListener(new View.OnClickListener() {
 
             //como cambiar de fragment v4
             @Override
             public void onClick(View v) {
-
                 indicators = new ArrayList<Integer>();
-                int ind;
                 realm.beginTransaction();
                 for (int x = 0; x < listStudent.size(); x++) {
+
                     extIndicator = (EditText) view.findViewById(x);
-                    RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
+
+                    int value = (Integer.parseInt(extIndicator.getText().toString()));
+
+                    RealmResults<Realm_evaluation_indicator> results = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
                             .equalTo("idStudent", listStudent.get(x).getId())
-                            .equalTo("subject_id", p.getIdGroup())
+                            .equalTo("idIndicator", 1)
+                            .findAll();
+                    /*** 1 Asistencia * 2 Participacion * 3 Desempenio* 4 Convivencia 5 Lectora * 6 Matematica*/
+                    RealmResults<Realm_evaluation_indicator> results2 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 2)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results3 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 3)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results4 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 4)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results5 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 5)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results6 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 6)
+                            .findAll();
+                    RealmResults<Realm_allocations> allocations = realm.where(Realm_allocations.class)
+                            .equalTo("id", p.getAllocation())
                             .findAll();
 
-                    if (extIndicator.getText().toString().equalsIgnoreCase(""))
-                        ind = 0;
+                    if (results2.size() > 0 && results3.size() > 0 && results4.size() > 0)
+                        if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) ||
+                                p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)))
+                            if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) && results5.size() > 0)
+                               isFinish = 1;
+                            else
+                                if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && results6.size() > 0)
+                                    isFinish  =1;
+                                else
+                                    isFinish = 0;
+                        else
+                            isFinish = 1;
                     else
-                        ind = Integer.parseInt(extIndicator.getText().toString());
+                        isFinish = 0;
 
-                    results.get(0).setAbsences_count(ind);
-                    //Como sincronizar la data o bien cada cuando se debe de sincronizar
+                    allocations.get(0).setIs_finish(isFinish);
 
+                    if (results.size() > 0)
+                        results.get(0).setValueAbb(value);
+                    else {
+                        Realm_evaluation_indicator evaluations = realm.createObject(Realm_evaluation_indicator.class);
+                        evaluations.setIdPk(getPk());
+                        evaluations.setIdStudent(listStudent.get(x).getId());
+                        evaluations.setIdAllocation(p.getAllocation());
+                        evaluations.setIdIndicator(1);
+                        evaluations.setValueAbb(value);
+                    }
                 }
-
-                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                        .equalTo("idGroup", p.getIdGroup())
-                        .findAll();
-
-                int goodJob = view.get(0).getAbsences_count();
-                view.get(0).setAbsences_count(1);
-               /* StringTokenizer token = new StringTokenizer(p.getIdGroup(), ", ");
-                token.nextToken();
-                String materia = token.nextToken().toString();
-
-                RealmResults<Realm_progress> pro = realm.where(Realm_progress.class)
-                        .equalTo("groupName", p.getIdGroup())
-                        .findAll();
-
-                if (view.get(0).getAbsences_count() >= 0 && view.get(0).getFriendship_score() >= 0 &&
-                        view.get(0).getPerformance_score() >= 0 && view.get(0).getParticipation_score() >= 0)
-
-                    if (!materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
-                            !materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)))
-                        pro.get(0).setFinish(1);
-                    else if (materia.equalsIgnoreCase(context.getResources().getString(R.string.mat)) &&
-                            view.get(0).getMath_score() >= 0)
-                        pro.get(0).setFinish(1);
-                    else if (materia.equalsIgnoreCase(context.getResources().getString(R.string.espa)) &&
-                            view.get(0).getReading_score() >= 0)
-                        pro.get(0).setFinish(1);
-                    else
-                        pro.get(0).setFinish(0);
-
-                else
-                    pro.get(0).setFinish(0);
-
-                showLog(pro.size() + " EN TABAS FINAL: " + pro.get(0).getFinish());*/
-
-                if (goodJob == -1)
-                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) );
-                else
-                    goodJob(rs.getString(R.string.contentEdit) + " '" + rs.getString(R.string.indAsistencia));
-
-
-                view.get(0).setAbsences_count(1);
                 realm.commitTransaction();
-
+                goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) + "'" + "",
+                        isFinish);
                 viewLatoutEdit();
-
             }
         });
 
@@ -295,13 +314,6 @@ public class TabAbsences extends Fragment {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sDialog) {
-                                realm.beginTransaction();
-                                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                                        .equalTo("idGroup", p.getIdGroup())
-                                        .findAll();
-
-                                view.get(0).setAbsences_count(0);
-                                realm.commitTransaction();
                                 sDialog.dismiss();
                                 viewLayoutList();
                             }
@@ -313,25 +325,29 @@ public class TabAbsences extends Fragment {
 
     }
 
-    private void viewLatoutEdit(){
+    private void viewLatoutEdit() {
         content.setVisibility(View.INVISIBLE);
         subContenedor.setVisibility(View.VISIBLE);
-        int total = 0, ninguna= 0, una= 0, masDeUna=0;
+        int total = 0, ninguna = 0, una = 0, masDeUna = 0;
 
         for (int x = 0; x < listStudent.size(); x++){
-            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
-                    .equalTo("idStudent",listStudent.get(x).getId())
-                    .equalTo("subject_id", p.getIdGroup())
+            RealmResults< Realm_evaluation_indicator> indicator = realm.where(Realm_evaluation_indicator.class)
+                    .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("idAllocation",p.getAllocation())
+                    .equalTo("idIndicator",1)
                     .findAll();
 
-            if (stIndi.get(0).getAbsences_count() == 0)
-                ninguna++;
-            else
-                if (stIndi.get(0).getAbsences_count() == 1)
+            switch (indicator.get(0).getValueAbb()){
+                case 0:
+                    ninguna++;
+                    break;
+                case 1:
                     una++;
-            else
+                    break;
+                default:
                     masDeUna++;
-
+                    break;
+            }
         }
 
         total = masDeUna + una + ninguna;
@@ -348,22 +364,31 @@ public class TabAbsences extends Fragment {
         subContenedor.setVisibility(View.INVISIBLE);
 
         for (int x = 0; x < listStudent.size(); x++){
-            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
-                    .equalTo("idStudent",listStudent.get(x).getId())
-                    .equalTo("subject_id", p.getIdGroup())
+
+            RealmResults< Realm_evaluation_indicator> indicator = realm.where(Realm_evaluation_indicator.class)
+                    .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("idAllocation",p.getAllocation())
+                    .equalTo("idIndicator",1)
                     .findAll();
 
             extIndicator = (EditText) view.findViewById(x);
 
-            showLog("Valor de indicator: " + stIndi.get(0).getAbsences_count());
-            if (stIndi.get(0).getAbsences_count() <=0)
-                extIndicator.setText("0");
+            if (indicator.size() > 0)
+                extIndicator.setText(indicator.get(0).getValueAbb() + "");
             else
-                extIndicator.setText(stIndi.get(0).getAbsences_count()+"");
+                extIndicator.setText("0");
         }
     }
 
-    private void goodJob(String content){
+    private int getPk(){
+        RealmResults<Realm_evaluation_indicator> i = realm.where(Realm_evaluation_indicator.class)
+                .equalTo("idPk", -1)
+                .findAll();
+
+        return i.size() + 1;
+    }
+
+    private void goodJob(String content, final int retorna){
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -371,6 +396,8 @@ public class TabAbsences extends Fragment {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
+                        if (retorna > 0)
+                            loadList();
                         sDialog.dismissWithAnimation();
                     }
                 })
@@ -386,11 +413,11 @@ public class TabAbsences extends Fragment {
     }
 
     private void showLog(String log){
-        Log.v("TabAbsences",log);
+        Log.v("TabAbsences", log);
     }
 
     private void messageToast(String toast){
-        Toast.makeText(context, toast, Toast.LENGTH_LONG ).show();
+        Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
     }
 
 }

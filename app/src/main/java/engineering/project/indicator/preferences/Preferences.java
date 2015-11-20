@@ -52,17 +52,18 @@ public class Preferences {
         com(e);
     }
 
-    public void setIdGroup(String idGroup){
-        e.putString("IdGroup",idGroup);
+
+    public void setAllocation(int allocation){
+        e.putInt("Allocation", allocation);
         com(e);
     }
 
-    public String getIdGroup(){
-        return p.getString("IdGroup","Destroy");
+    public int getAllocation(){
+        return p.getInt("Allocation",0);
     }
 
     public void clear(){
-       e.clear();
+        e.clear();
         com(e);
     }
     public String getTokenType(){

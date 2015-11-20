@@ -7,7 +7,8 @@ import java.util.ArrayList;
  */
 public class ParentList {
     private String mTitle;
-    private ArrayList<String> mArrayChildren;
+    private String porcentaje;
+    private ArrayList<ArrayChildren> mArrayChildren;
 
     public String getTitle() {
         return mTitle;
@@ -17,11 +18,19 @@ public class ParentList {
         mTitle = title;
     }
 
-    public ArrayList<String> getArrayChildren() {
+    public ArrayList<ArrayChildren> getArrayChildren() {
         return mArrayChildren;
     }
 
-    public void setArrayChildren(ArrayList<String> arrayChildren) {
+    public void setArrayChildren(ArrayList<ArrayChildren> arrayChildren) {
         mArrayChildren = arrayChildren;
+    }
+
+    public String getPorcentaje() {
+        return porcentaje;
+    }
+
+    public void setPorcentaje(String porcentaje) {
+        this.porcentaje = porcentaje;
     }
 }

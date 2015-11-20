@@ -8,36 +8,9 @@ import io.realm.RealmObject;
 public class Realm_allocations extends RealmObject {
 
     private int id;
-    private int idInternal;
     private int groupId;
     private int subjectId;
-    private int teacherId;
-    private String where;
-
-    public String getWhere() {
-        return where;
-    }
-
-    public void setWhere(String where) {
-        this.where = where;
-    }
-
-    public int getGradeId() {
-        return gradeId;
-    }
-
-    public int getIdInternal() {
-        return idInternal;
-    }
-
-    public void setIdInternal(int idInternal) {
-        this.idInternal = idInternal;
-    }
-    public void setGradeId(int gradeId) {
-        this.gradeId = gradeId;
-    }
-
-    private int gradeId;
+    private int is_finish;
 
     public int getGroupId() {
         return groupId;
@@ -63,11 +36,11 @@ public class Realm_allocations extends RealmObject {
         this.subjectId = subjectId;
     }
 
-    public int getTeacherId() {
-        return teacherId;
+    public int getIs_finish() {
+        return is_finish;
     }
 
-    public void setTeacherId(int teacherId) {
-        this.teacherId = teacherId;
+    public void setIs_finish(int is_finish) {
+        this.is_finish = is_finish;
     }
 }

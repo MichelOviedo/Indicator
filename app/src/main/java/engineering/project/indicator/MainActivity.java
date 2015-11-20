@@ -20,9 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import engineering.project.indicator.activities.LoginActivity;
 import engineering.project.indicator.componentsList.AdapterList;
+import engineering.project.indicator.componentsList.ArrayChildren;
 import engineering.project.indicator.componentsList.ParentList;
 import engineering.project.indicator.menuDrawer.DrawerItem;
 import engineering.project.indicator.menuDrawer.ListAdapterDrawer;
@@ -32,10 +34,9 @@ import engineering.project.indicator.structureModel.ModelTeacher;
 import engineering.project.indicator.structureRealm.Realm_allocations;
 import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
-import engineering.project.indicator.structureRealm.Realm_progress;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
-import engineering.project.indicator.structureRealm.Realm_students_indicator;
+import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
 import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.structureRealm.Realm_user;
 import engineering.project.indicator.structureRealm.Realm_viewTables;
@@ -55,6 +56,10 @@ public class MainActivity extends Activity {
     DrawerLayout drawerLayout;
     String[] tagTitles;
     ListView drawerList;
+
+    ArrayList<ArrayChildren> children;
+    ParentList parent;
+    ArrayList<ParentList> parentList = new ArrayList<ParentList>();
 
 
     public static final String AUTHORITY = "engineering.project.indicator.sync.provider";
@@ -97,65 +102,75 @@ public class MainActivity extends Activity {
     }
 
     private void loadList(){
-        ArrayList<String> numbers = new ArrayList<String>();
-        boolean validate = true;
-        ArrayList<ModelList> arrayModelList = new ArrayList<ModelList>();
 
-        ArrayList<ParentList> arrayParents = new ArrayList<ParentList>();
-        ArrayList<String> arrayChildren;
-        ParentList parent;
+        RealmResults<Realm_grades> grades = realm.where(Realm_grades.class)
+                .notEqualTo("id",-1)
+                .findAll();
 
-        RealmResults<Realm_allocations> allocationses = realm.where(Realm_allocations .class)
-                .notEqualTo("id",-1).findAll();
+        int cont,num,i,j=0,k,z=0 ;
+        ArrayList<Integer> v_aux = new ArrayList<Integer>();
+        ArrayList<Integer> idGrades = new ArrayList<Integer>();
 
-        for (int x = 0; x<allocationses.size(); x++ ){
-            validate = true;
-            modelList = new ModelList();
+        for (i=0;i<grades.size();i++) {
+            cont=0;
+            num=grades.get(i).getId();
+            v_aux.add(num);
+            j++;
+            for (k=0;k<v_aux.size();k++)
+                if ( v_aux.get(k) == num )
+                    cont++;
 
-            RealmResults<Realm_subjects> subjectses = realm.where(Realm_subjects.class)
-                    .equalTo("id",allocationses.get(x).getSubjectId())
+            if ( cont == 1 ) {
+                idGrades.add(num);
+            }
+        }
+
+        for (int x = 0; x < idGrades.size(); x++){
+            parent = new ParentList();//Conter el gropu en global  1 Secundaria o 2 Secundaria
+            children = new ArrayList<ArrayChildren>();//se guardan todos los gupus que pertenescan a parent
+
+            RealmResults<Realm_grades> grade = realm.where(Realm_grades.class)
+                    .equalTo("id", idGrades.get(x))
                     .findAll();
-            RealmResults<Realm_school_groups> school_groupses = realm.where(Realm_school_groups.class)
-                    .equalTo("id",allocationses.get(x).getGroupId())
+
+            parent.setTitle(grade.get(0).getTitle());//1 Primaria
+
+            RealmResults<Realm_subjects> sb = realm.where(Realm_subjects.class)
+                    .equalTo("idGrade", idGrades.get(x))
                     .findAll();
-            RealmResults<Realm_grades> grades = realm.where(Realm_grades.class)
-                    .equalTo("id", allocationses.get(x).getGradeId())
-                    .findAll();
 
-            modelList.setMatterName(subjectses.get(0).getTitle());
-            modelList.setMatterAbbre(subjectses.get(0).getAbbrevition());
-            modelList.setGroup(school_groupses.get(0).getGroupName());
-            modelList.setAllStudents(school_groupses.get(0).getTotalStudent());
-            modelList.setGradeNumbre(grades.get(0).getGradeNumbre());
-            modelList.setTitleGradeNumbre(grades.get(0).getTitle());
+            for (int y = 0; y < sb.size(); y++){
+                RealmResults<Realm_allocations> allocation = realm.where(Realm_allocations.class)
+                        .equalTo("id", sb.get(y).getIdAllocation())
+                        .findAll();
+                RealmResults<Realm_school_groups> groups = realm.where(Realm_school_groups.class)
+                        .equalTo("id", allocation.get(0).getGroupId())
+                        .findAll();
 
-            if (x == 0)
-                numbers.add(modelList.getTitleGradeNumbre());
-            else{
-                for (int y = 0; y < numbers.size(); y++)
-                    if (numbers.get(y).equalsIgnoreCase(modelList.getTitleGradeNumbre()))
-                        validate = false;
+                String title = parent.getTitle();
+                StringTokenizer token = new StringTokenizer(title, " ");
+                String subTitle = token.nextToken().toString() + "" + groups.get(0).getGroupName() + " " + sb.get(y).getTitle();
 
-                if (validate)
-                    numbers.add(modelList.getTitleGradeNumbre());
+                ArrayChildren chi = new ArrayChildren();
+                chi.setTitle(subTitle);
+                chi.setPhoto(allocation.get(0).getIs_finish());
+                chi.setIdAllocation(allocation.get(0).getId());
+                children.add(chi);
             }
 
-            arrayModelList.add(modelList);
-        }
-        for (int x = 0;  x < numbers.size(); x++){
-            parent = new ParentList();
-            arrayChildren = new ArrayList<String>();
-            parent.setTitle(numbers.get(x));
+            int con = 0;
+            for (int m = 0; m < children.size(); m++)
+                if (children.get(m).getPhoto() == 1)
+                    con++;
 
-            for (int xx = 0; xx < arrayModelList.size(); xx++)
-                if (numbers.get(x).equalsIgnoreCase(arrayModelList.get(xx).getTitleGradeNumbre()))
-                    arrayChildren.add(arrayModelList.get(xx).getGradeNumbre() + getResources().getString(R.string.grade) +
-                            arrayModelList.get(xx).getGroup() + ", " + arrayModelList.get(xx).getMatterName()  );
+            parent.setPorcentaje((con * 100 / children.size()) + "");
+            parent.setArrayChildren(children);
+            parentList.add(parent);
 
-            parent.setArrayChildren(arrayChildren);
-            arrayParents.add(parent);
         }
-        listExpandable.setAdapter(new AdapterList(this, arrayParents));
+
+        listExpandable.setAdapter(new AdapterList(this, parentList));
+
     }
 
     private void getReferencesUser(){
@@ -190,10 +205,9 @@ public class MainActivity extends Activity {
         realm.clear(Realm_allocations.class);
         realm.clear(Realm_faculty_member.class);
         realm.clear(Realm_grades.class);
-        realm.clear(Realm_progress.class);
         realm.clear(Realm_school_groups.class);
         realm.clear(Realm_students.class);
-        realm.clear(Realm_students_indicator.class);
+        realm.clear(Realm_evaluation_indicator.class);
         realm.clear(Realm_subjects.class);
         realm.clear(Realm_user.class);
         realm.clear(Realm_viewTables.class);
@@ -293,6 +307,6 @@ public class MainActivity extends Activity {
     }
 
     private void showLog(String log){
-        Log.v("MainActivity",log);
+        Log.e("MainActivity",log);
     }
 }

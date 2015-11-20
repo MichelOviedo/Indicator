@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,13 +29,13 @@ import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureRealm.Realm_allocations;
 import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
+import engineering.project.indicator.structureRealm.Realm_indicator_details;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
-import engineering.project.indicator.structureRealm.Realm_students_indicator;
 import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.structureRealm.Realm_user;
-import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 
 /**
@@ -48,21 +49,12 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     Resources rs;
     ProgressDialog pd;
     Realm realm;
-    String ID_STUDENT;
 
     public WebService(Context context, String url){
         this.context = context;
         rs = context.getResources();
         p = new Preferences(context);
         this.URL += url;
-    }
-
-    public WebService(Context context, String url,String ID_STUDENT){
-        this.context = context;
-        rs = context.getResources();
-        p = new Preferences(context);
-        this.URL += url;
-        this.ID_STUDENT = ID_STUDENT;
     }
 
     public void getToken(final String user, final String password){
@@ -89,7 +81,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                 new WebService(context, "api/account/me").getProfile();
 
                             }catch (Exception e){
-                                showLogError("En Exception" + e.getCause().toString());
+                                //showLogError("En Exception" + e.getCause().toString());
                             }
                         }
                     },
@@ -99,7 +91,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                             try {
                                 pd.dismiss();
                             }catch (Exception e){
-                                showLogError("Error en progressDialog");
+                                //showLogError("Error en progressDialog");
                             }
                             messageSweet(1);
                         }
@@ -154,41 +146,41 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                             faculty_member.setContact_number(json.getString("contact_number"));
 
                             JSONArray array = new JSONArray(json.getString("allocations"));
+
                             for (int x = 0; x < array.length(); x++){
                                 JSONObject jsonObject = array.getJSONObject(x);
+                                int idAllocation = jsonObject.getInt("id");
 
                                 Realm_allocations allocations = realm.createObject(Realm_allocations.class);
-                                allocations.setId(jsonObject.getInt("id"));
-                                allocations.setTeacherId(json.getInt("id"));
+                                allocations.setId(idAllocation);
+                                allocations.setIs_finish(0);
 
                                 JSONObject jsonSubject = new JSONObject(jsonObject.getString("subject"));
+                                    Realm_subjects subjects = realm.createObject(Realm_subjects.class);
+                                    subjects.setId(jsonSubject.getInt("id"));
+                                    subjects.setAbbrevition(jsonSubject.getString("abbreviation"));
+                                    subjects.setTitle(jsonSubject.getString("title"));
+                                    subjects.setIdAllocation(idAllocation);
+                                showLogError("ID OBTENIDO; "+jsonSubject.getInt("id") + " " + idAllocation);
+
                                 allocations.setSubjectId(jsonSubject.getInt("id"));
-                                Realm_subjects subjects = realm.createObject(Realm_subjects.class);
-                                subjects.setId(jsonSubject.getInt("id"));
-                                subjects.setAbbrevition(jsonSubject.getString("abbreviation"));
-                                subjects.setTitle(jsonSubject.getString("title"));
 
                                 JSONObject jsonGroup = new JSONObject(jsonObject.getString("group"));
+                                    Realm_school_groups groups = realm.createObject(Realm_school_groups.class);
+                                    groups.setId(jsonGroup.getInt("id"));
+                                    groups.setGroupName(jsonGroup.getString("group_name"));
+                                    groups.setTotalStudent(jsonGroup.getInt("total_students"));
                                 allocations.setGroupId(jsonGroup.getInt("id"));
-                                Realm_school_groups school_groups = realm.createObject(Realm_school_groups.class);
-                                school_groups.setId(jsonGroup.getInt("id"));
-                                school_groups.setGroupName(jsonGroup.getString("group_name"));
-                                school_groups.setTotalStudent(jsonGroup.getInt("total_students"));
+
 
                                 JSONObject jsonGrade = new JSONObject(jsonObject.getString("grade"));
-                                school_groups.setIdGrade(jsonGrade.getInt("id"));
-                                subjects.setIdGrade(jsonGrade.getInt("id"));
-                                Realm_grades grades = realm.createObject(Realm_grades.class);
-                                allocations.setGradeId(jsonGrade.getInt("id"));
-                                grades.setId(jsonGrade.getInt("id"));
-                                grades.setTitle(jsonGrade.getString("title"));
-                                grades.setGradeNumbre(jsonGrade.getInt("grade_number"));
+                                    Realm_grades grades = realm.createObject(Realm_grades.class);
+                                    grades.setId(jsonGrade.getInt("id"));
+                                    grades.setGradeNumbre(jsonGrade.getInt("grade_number"));
+                                    grades.setTitle(jsonGrade.getString("title"));
 
-                                new WebService(context, "api/students/in-group/" + jsonGroup.getInt("id") ,
-                                        grades.getGradeNumbre() + "" + school_groups.getGroupName() + ", " + subjects.getTitle() + "" )
-                                        .insertStudent();
+                                    subjects.setIdGrade(jsonGrade.getInt("id"));
                             }
-
 
                             JSONObject jsonUser = new JSONObject(json.getString("user"));
                             Realm_user user = realm.createObject(Realm_user.class);
@@ -199,10 +191,10 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                             realm.commitTransaction();
                             pd.dismiss();
 
-                            loadMain();
+                            new WebService(context, "api/students/in-group/").insertStudent();
 
                         }catch (Exception e){
-                            showLogError("En Exception" + e.getCause().toString());
+                            ////showLogError("En Exception" + e.getCause().toString());
                         }
                     }
                 },
@@ -213,9 +205,9 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                             pd.dismiss();
                             p.clear();
                             Toast.makeText(context, "Usuario incorrecto!, Vuelva a intentarlo.", Toast.LENGTH_LONG).show();
-                            showLogError("Error al obtener el perfil");
+                            ////showLogError("Error al obtener el perfil");
                         }catch (Exception e){
-                            showLogError("Error en progressDialog");
+                            ////showLogError("Error en progressDialog");
                         }
                     }
                 }){
@@ -232,70 +224,69 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
 
     private void insertStudent(){
         realm = Realm.getInstance(context);
+        pd = ProgressDialog.show(
+                context, "Cargando grupos",
+                "Esto puedo tomar unos segundos...");
 
-        StringRequest getRequest = new StringRequest(Request.Method.GET, URL,
+        RealmResults<Realm_school_groups> group = realm.where(Realm_school_groups.class)
+                .notEqualTo("id", -1)
+                .findAll();
+
+        int cont,num,i,j=0,k,z=0 ;
+        ArrayList<Integer> v_aux = new ArrayList<Integer>();
+        ArrayList<Integer> idGroups = new ArrayList<Integer>();
+
+        for (i=0;i<group.size();i++) {
+            cont=0;
+            num=group.get(i).getId();
+            v_aux.add(num);
+            j++;
+            for (k=0;k<v_aux.size();k++)
+                if ( v_aux.get(k) == num )
+                    cont++;
+
+            if ( cont == 1 ) {
+                idGroups.add(num);
+            }
+        }
+
+
+        for (int x = 0; x < idGroups.size(); x++)
+            insetStudentInGroup(URL + idGroups.get(x));
+
+        loadDetailsIndicator();
+        loadMain();
+        pd.dismiss();
+    }
+
+    private void insetStudentInGroup(String url){
+        StringRequest getRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>(){
                     @Override
                     public void onResponse(String response) {
                         try{
                             JSONObject json = new JSONObject(response);
 
-                            if (json.getBoolean("sucess")){
+                            if (json.getBoolean("success")){
                                 JSONArray jsonArray = new JSONArray(json.getString("data"));
 
+                                realm.beginTransaction();
                                 for (int x = 0; x < jsonArray.length(); x++) {
                                     JSONObject jsonStudent = jsonArray.getJSONObject(x);
-
-                                    realm.beginTransaction();
-                                    Realm_students students = realm.createObject(Realm_students.class);
-                                    students.setId(jsonStudent.getInt("id"));
-                                    students.setFirstName(jsonStudent.getString("first_name"));
-                                    students.setLastName(jsonStudent.getString("last_name"));
-                                    students.setMotherName(jsonStudent.getString("mothers_name"));
-                                    students.setGender("gender");
-                                    students.setGruopId(jsonStudent.getInt("school_group_id"));
-                                    students.setIdInformal(ID_STUDENT);
-
-                                    Realm_students_indicator indicator = realm.createObject(Realm_students_indicator.class);
-                                    indicator.setAbsences_count(-1);
-                                    indicator.setFriendship_score(-1);
-                                    indicator.setMath_score(-1);
-                                    indicator.setParticipation_score(-1);
-                                    indicator.setPerformance_score(-1);
-                                    indicator.setIdStudent(jsonStudent.getInt("id"));
-                                    indicator.setSubject_id(ID_STUDENT);
-
-                                   /* showLog("1");
-                                    showLog("ID: " + ID_STUDENT.substring(0, 1));
-                                    String num = ID_STUDENT.substring(0,1);
-                                    showLog("2");
-                                    int number = Integer.parseInt(num);
-                                    showLog("3");
-                                    Realm_progress p = realm.createObject(Realm_progress.class);
-                                    p.setGroupName(ID_STUDENT);
-                                    p.setNumber(number);
-                                    p.setFinish(0);*/
-
-
-                                    showLogError("Este es el id de la viewTab: " + ID_STUDENT);
-                                    Realm_viewTables viewTables = realm.createObject(Realm_viewTables.class);
-                                    viewTables.setIdGroup(ID_STUDENT);
-                                    viewTables.setAbsences_count(-1);
-                                    viewTables.setFriendship_score(-1);
-                                    viewTables.setMath_score(-1);
-                                    viewTables.setParticipation_score(-1);
-                                    viewTables.setReading_score(-1);
-                                    viewTables.setPerformance_score(-1);
-                                    realm.commitTransaction();
-                                }
-
+                                        Realm_students students = realm.createObject(Realm_students.class);
+                                        students.setId(jsonStudent.getInt("id"));
+                                        students.setFirstName(jsonStudent.getString("first_name"));
+                                        students.setLastName(jsonStudent.getString("last_name"));
+                                        students.setMotherName(jsonStudent.getString("mothers_name"));
+                                        students.setGruopId(jsonStudent.getInt("school_group_id"));
+                                        students.setGender(jsonStudent.getString("gender"));
+                                    }
+                                realm.commitTransaction();
                             }
-                            else{
-                                showLogError("Error en: " + ID_STUDENT);
-                            }
+
 
                         }catch (Exception e){
-                            showLogError("En Exception" + e.getCause().toString());
+                            ////showLogError("En Exception" + e.getCause().toString());
                         }
                     }
                 },
@@ -305,7 +296,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                         try {
 
                         }catch (Exception e){
-                            showLogError("Error en progressDialog");
+                            ////showLogError("Error en progressDialog");
                         }
                     }
                 }){
@@ -317,6 +308,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
 
                 return headers;
             }};
+
         volleyRequest(getRequest);
     }
 
@@ -341,10 +333,41 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     }
 
     private void loadMain(){
+        ////showLogError("LoadMain");
         Intent i = new Intent(context, MainActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
+    }
+
+    private void loadDetailsIndicator(){
+        realm.beginTransaction();
+
+        for (int x = 1; x < 7; x++){
+            Realm_indicator_details id =  realm.createObject(Realm_indicator_details.class);
+            id.setIdPk(x);
+            switch (x){
+                case 1:
+                    id.setTilte(rs.getString(R.string.indAsistencia));
+                    break;
+                case 2:
+                    id.setTilte(rs.getString(R.string.indParti));
+                    break;
+                case 3:
+                    id.setTilte(rs.getString(R.string.indDesempe));
+                    break;
+                case 4:
+                    id.setTilte(rs.getString(R.string.indConvi));
+                    break;
+                case 5:
+                    id.setTilte(rs.getString(R.string.indLect));
+                    break;
+                case 6:
+                    id.setTilte(rs.getString(R.string.indMate));
+                    break;
+            }
+        }
+        realm.commitTransaction();
     }
 
     @Override
@@ -387,7 +410,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     }
 
     private void showLog(String log){
-        Log.v("WebService",log);
+        Log.v("WebService", log);
     }
 
     private void showLogError(String error){

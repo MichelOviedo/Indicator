@@ -6,16 +6,8 @@ import io.realm.RealmObject;
  * Created by EduardoMichel on 08/11/2015.
  */
 public class Realm_students extends RealmObject {
-    private int id, gruopId;
-    private String firstName, lastName, motherName, gender, idInformal;
-
-    public String getIdInformal() {
-        return idInformal;
-    }
-
-    public void setIdInformal(String idInformal) {
-        this.idInformal = idInformal;
-    }
+    private int id, gruopId, idAllocation;
+    private String firstName, lastName, motherName, gender;
 
     public String getFirstName() {
         return firstName;
@@ -63,5 +55,13 @@ public class Realm_students extends RealmObject {
 
     public void setMotherName(String motherName) {
         this.motherName = motherName;
+    }
+
+    public int getIdAllocation() {
+        return idAllocation;
+    }
+
+    public void setIdAllocation(int idAllocation) {
+        this.idAllocation = idAllocation;
     }
 }
