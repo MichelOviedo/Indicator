@@ -53,6 +53,7 @@ public class TabAbsences extends Fragment {
     Realm realm;
     ArrayList<ModelStudent> listStudent;
     ArrayList<Integer> indicators;
+    int isFinish = 0;
 
     String  cade = "";
     public TabAbsences(){}
@@ -218,8 +219,6 @@ public class TabAbsences extends Fragment {
     }
     //</editor-fold>
 
-    int isFinish = 0;
-
     private void userButton(){
         save.setOnClickListener(new View.OnClickListener() {
 
@@ -255,12 +254,12 @@ public class TabAbsences extends Fragment {
                             .equalTo("idStudent", listStudent.get(x).getId())
                             .equalTo("idIndicator", 4)
                             .findAll();
-                    RealmResults<Realm_evaluation_indicator> results5 = realm.where(Realm_evaluation_indicator.class)
+                    RealmResults<Realm_evaluation_indicator> espa = realm.where(Realm_evaluation_indicator.class)
                             .equalTo("idAllocation", p.getAllocation())
                             .equalTo("idStudent", listStudent.get(x).getId())
                             .equalTo("idIndicator", 5)
                             .findAll();
-                    RealmResults<Realm_evaluation_indicator> results6 = realm.where(Realm_evaluation_indicator.class)
+                    RealmResults<Realm_evaluation_indicator> mate = realm.where(Realm_evaluation_indicator.class)
                             .equalTo("idAllocation", p.getAllocation())
                             .equalTo("idStudent", listStudent.get(x).getId())
                             .equalTo("idIndicator", 6)
@@ -272,10 +271,10 @@ public class TabAbsences extends Fragment {
                     if (results2.size() > 0 && results3.size() > 0 && results4.size() > 0)
                         if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) ||
                                 p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)))
-                            if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) && results5.size() > 0)
+                            if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) && mate.size() > 0)
                                isFinish = 1;
                             else
-                                if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && results6.size() > 0)
+                                if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && espa.size() > 0)
                                     isFinish  =1;
                                 else
                                     isFinish = 0;

@@ -1,25 +1,39 @@
 package engineering.project.indicator.tabsIndicators;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
+import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
+import engineering.project.indicator.structureRealm.Realm_school_groups;
+import engineering.project.indicator.structureRealm.Realm_students;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by EduardoMichel on 13/11/2015.
@@ -51,12 +65,15 @@ public class TabFriendship extends Fragment {
         view = inflater.inflate(R.layout.content_tab, container, false);
         context = container.getContext();
 
-      //  builder();
-        //userButton();
+        builder();
+        showLog("0");
+        userButton();
+        showLog("0.1");
 
         return view;
     }
-/*
+
+
     private void builder(){
 
         content = (RelativeLayout) view.findViewById(R.id.rltContentViewTable);
@@ -95,25 +112,23 @@ public class TabFriendship extends Fragment {
         titleEdit.setText(rs.getString(R.string.conviEdit));
         tableTitle.setText(rs.getString(R.string.titleTab));
         tablePorcentage.setText(rs.getString(R.string.promedio));
-        tableFileOne.setText(rs.getString(R.string.tabMala));
+        tableFileOne.setText(rs.getString(R.string.tabBue));
         tableFileTwo.setText(rs.getString(R.string.tabReg));
-        tableFileThree.setText(rs.getString(R.string.tabBue));
+        tableFileThree.setText(rs.getString(R.string.tabMala));
         tableFileOnePro.setText("");
         tableFileTwoPor.setText("");
         tableFileThreePor.setText("");
 
-
-        RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
-                .equalTo("idGroup",p.getIdGroup())
+        RealmResults<Realm_evaluation_indicator> evaluation = realm.where(Realm_evaluation_indicator.class)
+                .equalTo("idIndicator", 4)
+                .equalTo("idAllocation",p.getAllocation())
                 .findAll();
-        if (viewTables.get(0).getFriendship_score() <= 0) {
-            viewLayoutList();
-        }
-        else{
+
+
+        if (evaluation.size() > 0)
             viewLatoutEdit();
-        }
-
-
+        else
+            viewLayoutList();
 
     }
 
@@ -122,31 +137,39 @@ public class TabFriendship extends Fragment {
         TableRow fila;
         TextView txtId;
         TextView txtNombre;
+        showLog("6");
 
         fila = new TableRow(context);
         fila.setLayoutParams(layoutFila);
 
         txtId = new TextView(context);
         txtNombre = new TextView(context);
+        showLog("7");
 
         txtId.setText(rs.getString(R.string.name));
         txtId.setGravity(Gravity.CENTER_HORIZONTAL);
         txtId.setBackgroundResource(R.drawable.cabecera);
         txtId.setTextColor(Color.BLACK);
         txtId.setLayoutParams(layoutId);
+        showLog("8");
 
         txtNombre.setText(rs.getString(R.string.indicatorFri));
         txtNombre.setTextColor(Color.BLACK);
         txtNombre.setGravity(Gravity.CENTER_HORIZONTAL);
         txtNombre.setBackgroundResource(R.drawable.cabecera);
         txtNombre.setLayoutParams(layoutTexto);
+        showLog("9");
 
         fila.addView(txtId);
         fila.addView(txtNombre);
         head.addView(fila);
+        showLog("10");
     }
 
     public void agregarFilasTabla() {
+        listStudent = new ArrayList<ModelStudent>();
+        ModelStudent student;
+
         List<String> spinnerArray =  new ArrayList<String>();
         spinnerArray.add("Buena");
         spinnerArray.add("Regular");
@@ -154,12 +177,20 @@ public class TabFriendship extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 context, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        showLog("11");
 
-        listStudent = new ArrayList<ModelStudent>();
-        ModelStudent student;
-        RealmResults<Realm_students> studentses = realm.where(Realm_students.class)
-                .equalTo("idInformal", p.getIdGroup())
+        RealmResults<Realm_allocations> all = realm.where(Realm_allocations.class)
+                .equalTo("id", p.getAllocation())
                 .findAll();
+        showLog("12");
+        RealmResults<Realm_school_groups> group = realm.where(Realm_school_groups.class)
+                .equalTo("id", all.get(0).getGroupId())
+                .findAll();
+        showLog("13");
+        RealmResults<Realm_students> studentses = realm.where(Realm_students.class)
+                .equalTo("gruopId", group.get(0).getId())
+                .findAll();
+        showLog("14");
 
         for (int x = 0; x < studentses.size(); x++) {
             student = new ModelStudent();
@@ -173,17 +204,19 @@ public class TabFriendship extends Fragment {
             listStudent.add(student);
         }
 
+        showLog("15");
         for (int x = 0; x < listStudent.size(); x++) {
             TableRow fila;
             TextView txtId;
 
+            showLog("16");
             fila = new TableRow(context);
             fila.setLayoutParams(layoutFila);
 
             txtId = new TextView(context);
             indicator = new Spinner(context);
 
-            txtId.setText(listStudent.get(x).getFirstName() + "\n" +
+            txtId.setText(listStudent.get(x).getFirstName()+"\n" +
                     listStudent.get(x).getLastName() + " " + listStudent.get(x).getMotherName());
             txtId.setGravity(Gravity.CENTER_HORIZONTAL);
             txtId.setBackgroundResource(R.drawable.celda);
@@ -194,16 +227,19 @@ public class TabFriendship extends Fragment {
             indicator.setId(x);
             indicator.setBackgroundResource(R.drawable.celda);
             //indicator.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-           // indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+            // indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
             indicator.setAdapter(adapter);
             indicator.setLayoutParams(layoutTexto);
 
             fila.addView(txtId);
             fila.addView(indicator);
             table.addView(fila);
+            showLog("17");
         }
     }
     //</editor-fold>
+
+    int isFinish = 0;
 
     private void userButton(){
         save.setOnClickListener(new View.OnClickListener() {
@@ -211,19 +247,12 @@ public class TabFriendship extends Fragment {
             //como cambiar de fragment v4
             @Override
             public void onClick(View v) {
-
                 indicators = new ArrayList<Integer>();
                 double ind = 0;
                 realm.beginTransaction();
-
                 for (int x = 0; x < listStudent.size(); x++) {
-                    extIndicator = (Spinner) view.findViewById(x);
-                    RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
-                            .equalTo("idStudent", listStudent.get(x).getId())
-                            .equalTo("subject_id", p.getIdGroup())
-                            .findAll();
 
-                    showLog("Student: " + results.get(0).getFriendship_score());
+                    extIndicator = (Spinner) view.findViewById(x);
 
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Buena"))
                         ind = 1;
@@ -232,27 +261,71 @@ public class TabFriendship extends Fragment {
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Mala"))
                         ind = 0;
 
-                    results.get(0).setFriendship_score(ind);
-                    //Como sincronizar la data o bien cada cuando se debe de sincronizar
-                    showLog("Student Result: " + results.get(0).getFriendship_score());
+                    RealmResults<Realm_evaluation_indicator> results = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 1)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results2 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 2)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results3 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 3)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> results4 = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 4)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> espa = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 5)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> mate = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 6)
+                            .findAll();
+                    RealmResults<Realm_allocations> allocations = realm.where(Realm_allocations.class)
+                            .equalTo("id", p.getAllocation())
+                            .findAll();
 
+                    if (results.size() > 0 && results2.size() > 0 && results3.size() > 0)
+                        if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) ||
+                                p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)))
+                            if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) && mate.size() > 0)
+                                isFinish = 1;
+                            else if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && espa.size() > 0)
+                                isFinish = 1;
+                            else
+                                isFinish = 0;
+                        else
+                            isFinish = 1;
+                    else
+                        isFinish = 0;
+
+                    allocations.get(0).setIs_finish(isFinish);
+
+                    if (results4.size() > 0)
+                        results4.get(0).setValue(ind);
+                    else {
+                        Realm_evaluation_indicator evaluations = realm.createObject(Realm_evaluation_indicator.class);
+                        evaluations.setIdPk(getPk());
+                        evaluations.setIdStudent(listStudent.get(x).getId());
+                        evaluations.setIdAllocation(p.getAllocation());
+                        evaluations.setIdIndicator(4);
+                        evaluations.setValue(ind);
+                    }
                 }
-
-                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                        .equalTo("idGroup", p.getIdGroup())
-                        .findAll();
-
-                if (view.get(0).getFriendship_score() == -1)
-                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indConvi) + "'");
-                else
-                    goodJob(rs.getString(R.string.contentEdit) + " '"+ rs.getString(R.string.indConvi) + "'");
-
-                view.get(0).setFriendship_score(1);
                 realm.commitTransaction();
-
+                goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indConvi) + "'" + "",
+                        isFinish);
                 viewLatoutEdit();
-
-
             }
         });
 
@@ -266,13 +339,6 @@ public class TabFriendship extends Fragment {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sDialog) {
-                                realm.beginTransaction();
-                                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                                        .equalTo("idGroup", p.getIdGroup())
-                                        .findAll();
-
-                                view.get(0).setFriendship_score(0);
-                                realm.commitTransaction();
                                 sDialog.dismiss();
                                 viewLayoutList();
                             }
@@ -284,33 +350,32 @@ public class TabFriendship extends Fragment {
 
     }
 
-    private void viewLatoutEdit(){
+    private void viewLatoutEdit() {
         content.setVisibility(View.INVISIBLE);
         subContenedor.setVisibility(View.VISIBLE);
-        int total, mala= 0, regular= 0, buena=0;
+        int total = 0, buena = 0, regular = 0, mala = 0;
 
-        for (int x = 0; x < listStudent.size(); x++){
-            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
-                    .equalTo("idStudent",listStudent.get(x).getId())
-                    .equalTo("subject_id", p.getIdGroup())
+        for (int x = 0; x < listStudent.size(); x++) {
+            RealmResults<Realm_evaluation_indicator> indicator = realm.where(Realm_evaluation_indicator.class)
+                    .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("idAllocation", p.getAllocation())
+                    .equalTo("idIndicator", 4)
                     .findAll();
 
-            if (stIndi.get(0).getFriendship_score() == 0)
-                mala++;
-            else
-            if (stIndi.get(0).getFriendship_score() == 0.5)
-                regular++;
-            else
+            if (indicator.get(0).getValue() == 1)
                 buena++;
+            if (indicator.get(0).getValue() == 0.5)
+                regular++;
+            if (indicator.get(0).getValue() == 0)
+                mala++;
 
         }
 
-        total = mala + regular + buena;
+        total = buena + regular + mala;
 
-        //una * 100 / total + rs.getString(R.string.signo)
-        tableFileOnePro.setText(mala * 100 / total + rs.getString(R.string.signo));
+        tableFileOnePro.setText(buena * 100 / total + rs.getString(R.string.signo));
         tableFileTwoPor.setText(regular * 100 / total + rs.getString(R.string.signo));
-        tableFileThreePor.setText(buena * 100 / total + rs.getString(R.string.signo));
+        tableFileThreePor.setText(mala * 100 / total + rs.getString(R.string.signo));
 
 
     }
@@ -344,25 +409,39 @@ public class TabFriendship extends Fragment {
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         for (int x = 0; x < listStudent.size(); x++){
-            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
-                    .equalTo("idStudent",listStudent.get(x).getId())
-                    .equalTo("subject_id", p.getIdGroup())
+            RealmResults<Realm_evaluation_indicator> stIndi = realm.where(Realm_evaluation_indicator.class)
+                    .equalTo("idAllocation", p.getAllocation())
+                    .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("idIndicator", 4)
                     .findAll();
 
             extIndicator = (Spinner) view.findViewById(x);
 
-            showLog("Valor de indicator: " + stIndi.get(0).getFriendship_score());
-
-            if (stIndi.get(0).getFriendship_score() == 0)
-                extIndicator.setAdapter(adapter);
-            if (stIndi.get(0).getFriendship_score() == 0.5)
-                extIndicator.setAdapter(ada);
-            if (stIndi.get(0).getFriendship_score() == 1)
+            if (stIndi.size() > 0){
+                if (stIndi.get(0).getValue() == 0)
+                    extIndicator.setAdapter(adapter);
+                if (stIndi.get(0).getValue() == 0.5)
+                    extIndicator.setAdapter(ada);
+                if (stIndi.get(0).getValue() == 1)
+                    extIndicator.setAdapter(ad);
+            }
+            else
                 extIndicator.setAdapter(ad);
+
+
+
         }
     }
 
-    private void goodJob(String content){
+    private int getPk(){
+        RealmResults<Realm_evaluation_indicator> i = realm.where(Realm_evaluation_indicator.class)
+                .equalTo("idPk", -1)
+                .findAll();
+
+        return i.size() + 1;
+    }
+
+    private void goodJob(String content, final int retorna){
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -370,6 +449,8 @@ public class TabFriendship extends Fragment {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
+                        if (retorna > 0)
+                            loadList();
                         sDialog.dismissWithAnimation();
                     }
                 })
@@ -377,11 +458,18 @@ public class TabFriendship extends Fragment {
 
     }
 
+    private void loadList(){
+        Intent i = new Intent(context, MainActivity.class);
+        // i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(i);
+    }
+
     private void showLog(String log){
-        Log.v("TabFriendship", log);
+        Log.v("TabFriendShio", log);
     }
 
     private void messageToast(String toast){
         Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
-    }*/
+    }
 }

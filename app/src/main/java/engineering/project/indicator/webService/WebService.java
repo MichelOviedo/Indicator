@@ -161,7 +161,6 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     subjects.setAbbrevition(jsonSubject.getString("abbreviation"));
                                     subjects.setTitle(jsonSubject.getString("title"));
                                     subjects.setIdAllocation(idAllocation);
-                                showLogError("ID OBTENIDO; "+jsonSubject.getInt("id") + " " + idAllocation);
 
                                 allocations.setSubjectId(jsonSubject.getInt("id"));
 
@@ -171,7 +170,6 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     groups.setGroupName(jsonGroup.getString("group_name"));
                                     groups.setTotalStudent(jsonGroup.getInt("total_students"));
                                 allocations.setGroupId(jsonGroup.getInt("id"));
-
 
                                 JSONObject jsonGrade = new JSONObject(jsonObject.getString("grade"));
                                     Realm_grades grades = realm.createObject(Realm_grades.class);
@@ -205,10 +203,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                             pd.dismiss();
                             p.clear();
                             Toast.makeText(context, "Usuario incorrecto!, Vuelva a intentarlo.", Toast.LENGTH_LONG).show();
-                            ////showLogError("Error al obtener el perfil");
-                        }catch (Exception e){
-                            ////showLogError("Error en progressDialog");
-                        }
+                        }catch (Exception e){}
                     }
                 }){
             @Override
@@ -241,13 +236,12 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
             num=group.get(i).getId();
             v_aux.add(num);
             j++;
+
             for (k=0;k<v_aux.size();k++)
                 if ( v_aux.get(k) == num )
                     cont++;
-
-            if ( cont == 1 ) {
+            if ( cont == 1 )
                 idGroups.add(num);
-            }
         }
 
 
@@ -284,10 +278,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                 realm.commitTransaction();
                             }
 
-
-                        }catch (Exception e){
-                            ////showLogError("En Exception" + e.getCause().toString());
-                        }
+                        }catch (Exception e){}
                     }
                 },
                 new Response.ErrorListener() {
@@ -295,9 +286,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                     public void onErrorResponse(VolleyError error) {
                         try {
 
-                        }catch (Exception e){
-                            ////showLogError("Error en progressDialog");
-                        }
+                        }catch (Exception e){}
                     }
                 }){
             @Override
@@ -320,7 +309,6 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
         Volley.newRequestQueue(context).add(stringRequest);
     }
 
-
     private boolean validateConexion(){
         ConnectivityManager conn = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -333,7 +321,6 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     }
 
     private void loadMain(){
-        ////showLogError("LoadMain");
         Intent i = new Intent(context, MainActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -376,9 +363,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     }
 
     @Override
-    public void onResponse(JSONObject response) {
-
-    }
+    public void onResponse(JSONObject response) {}
 
     //<editor-fold desc="Mensajes">
     private void messageToast(String toast){

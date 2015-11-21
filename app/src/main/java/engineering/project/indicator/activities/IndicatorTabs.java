@@ -22,6 +22,11 @@ import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureRealm.Realm_allocations;
 import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.tabsIndicators.TabAbsences;
+import engineering.project.indicator.tabsIndicators.TabFriendship;
+import engineering.project.indicator.tabsIndicators.TabMath;
+import engineering.project.indicator.tabsIndicators.TabParticipation;
+import engineering.project.indicator.tabsIndicators.TabPerformance;
+import engineering.project.indicator.tabsIndicators.TabReading;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -78,21 +83,15 @@ public class IndicatorTabs extends AppCompatActivity {
 
 
         adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
-        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
-        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
-        adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
-        //adapter.addFrag(new TabFriendship(), getResources().getString(R.string.titleCon));
-        //adapter.addFrag(new TabPerformance(), getResources().getString(R.string.titleDesemp));
-        //adapter.addFrag(new TabParticipation(), getResources().getString(R.string.titlePart));
+        adapter.addFrag(new TabFriendship(), getResources().getString(R.string.titleCon));
+        adapter.addFrag(new TabPerformance(), getResources().getString(R.string.titleDesemp));
+        adapter.addFrag(new TabParticipation(), getResources().getString(R.string.titlePart));
 
         if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.mat)))
-            //adapter.addFrag(new TabMath(), getResources().getString(R.string.titleMath));
-            adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
-
+            adapter.addFrag(new TabMath(), getResources().getString(R.string.titleMath));
 
         if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.espa)))
-            //adapter.addFrag(new TabReading(), getResources().getString(R.string.titleEspa));
-            adapter.addFrag(new TabAbsences(), getResources().getString(R.string.titleAsis));
+            adapter.addFrag(new TabReading(), getResources().getString(R.string.titleEspa));
 
         viewPager.setAdapter(adapter);
     }

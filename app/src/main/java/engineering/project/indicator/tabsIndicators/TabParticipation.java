@@ -1,25 +1,39 @@
 package engineering.project.indicator.tabsIndicators;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
+import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
+import engineering.project.indicator.structureRealm.Realm_school_groups;
+import engineering.project.indicator.structureRealm.Realm_students;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by EduardoMichel on 13/11/2015.
@@ -40,6 +54,7 @@ public class TabParticipation extends Fragment {
     Realm realm;
     ArrayList<ModelStudent> listStudent;
     ArrayList<Integer> indicators;
+    int isFinish;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,15 +67,13 @@ public class TabParticipation extends Fragment {
         view = inflater.inflate(R.layout.content_tab, container, false);
         context = container.getContext();
 
-      //  builder();
-       // userButton();
+        builder();
+        userButton();
 
         return view;
     }
 
-
- /*   private void builder(){
-
+    private void builder(){
         content = (RelativeLayout) view.findViewById(R.id.rltContentViewTable);
         p = new Preferences(context);
         rs = context.getResources();
@@ -97,25 +110,23 @@ public class TabParticipation extends Fragment {
         titleEdit.setText(rs.getString(R.string.partEdit));
         tableTitle.setText(rs.getString(R.string.titleTab));
         tablePorcentage.setText(rs.getString(R.string.promedio));
-        tableFileOne.setText(rs.getString(R.string.tabMala));
+        tableFileOne.setText(rs.getString(R.string.tabBue));
         tableFileTwo.setText(rs.getString(R.string.tabReg));
-        tableFileThree.setText(rs.getString(R.string.tabBue));
+        tableFileThree.setText(rs.getString(R.string.tabMala));
         tableFileOnePro.setText("");
         tableFileTwoPor.setText("");
         tableFileThreePor.setText("");
 
-
-        RealmResults<Realm_viewTables> viewTables = realm.where(Realm_viewTables.class)
-                .equalTo("idGroup",p.getIdGroup())
+        RealmResults<Realm_evaluation_indicator> evaluation = realm.where(Realm_evaluation_indicator.class)
+                .equalTo("idIndicator", 2)
+                .equalTo("idAllocation",p.getAllocation())
                 .findAll();
-        if (viewTables.get(0).getParticipation_score() <= 0) {
-            viewLayoutList();
-        }
-        else{
+
+
+        if (evaluation.size() > 0)
             viewLatoutEdit();
-        }
-
-
+        else
+            viewLayoutList();
 
     }
 
@@ -146,9 +157,13 @@ public class TabParticipation extends Fragment {
         fila.addView(txtId);
         fila.addView(txtNombre);
         head.addView(fila);
+
     }
 
     public void agregarFilasTabla() {
+        listStudent = new ArrayList<ModelStudent>();
+        ModelStudent student;
+
         List<String> spinnerArray =  new ArrayList<String>();
         spinnerArray.add("Buena");
         spinnerArray.add("Regular");
@@ -157,10 +172,14 @@ public class TabParticipation extends Fragment {
                 context, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        listStudent = new ArrayList<ModelStudent>();
-        ModelStudent student;
+        RealmResults<Realm_allocations> all = realm.where(Realm_allocations.class)
+                .equalTo("id", p.getAllocation())
+                .findAll();
+        RealmResults<Realm_school_groups> group = realm.where(Realm_school_groups.class)
+                .equalTo("id", all.get(0).getGroupId())
+                .findAll();
         RealmResults<Realm_students> studentses = realm.where(Realm_students.class)
-                .equalTo("idInformal", p.getIdGroup())
+                .equalTo("gruopId", group.get(0).getId())
                 .findAll();
 
         for (int x = 0; x < studentses.size(); x++) {
@@ -185,7 +204,7 @@ public class TabParticipation extends Fragment {
             txtId = new TextView(context);
             indicator = new Spinner(context);
 
-            txtId.setText(listStudent.get(x).getFirstName() + "\n" +
+            txtId.setText(listStudent.get(x).getFirstName()+"\n" +
                     listStudent.get(x).getLastName() + " " + listStudent.get(x).getMotherName());
             txtId.setGravity(Gravity.CENTER_HORIZONTAL);
             txtId.setBackgroundResource(R.drawable.celda);
@@ -207,25 +226,18 @@ public class TabParticipation extends Fragment {
     }
     //</editor-fold>
 
-    private void userButton(){
+    private void userButton() {
         save.setOnClickListener(new View.OnClickListener() {
 
             //como cambiar de fragment v4
             @Override
             public void onClick(View v) {
-
                 indicators = new ArrayList<Integer>();
                 double ind = 0;
                 realm.beginTransaction();
-
                 for (int x = 0; x < listStudent.size(); x++) {
-                    extIndicator = (Spinner) view.findViewById(x);
-                    RealmResults<Realm_students_indicator> results = realm.where(Realm_students_indicator.class)
-                            .equalTo("idStudent", listStudent.get(x).getId())
-                            .equalTo("subject_id", p.getIdGroup())
-                            .findAll();
 
-                    showLog("Student: " + results.get(0).getParticipation_score());
+                    extIndicator = (Spinner) view.findViewById(x);
 
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Buena"))
                         ind = 1;
@@ -233,28 +245,78 @@ public class TabParticipation extends Fragment {
                         ind = 0.5;
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Mala"))
                         ind = 0;
+                    //// asistencia paticipacion desempenio convivencia lectora matematica
+                    RealmResults<Realm_evaluation_indicator> asistencia = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 1)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> participacion = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 2)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> despempenio = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 3)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> convivencia = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 4)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> lectura = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 5)
+                            .findAll();
+                    RealmResults<Realm_evaluation_indicator> matematicas = realm.where(Realm_evaluation_indicator.class)
+                            .equalTo("idAllocation", p.getAllocation())
+                            .equalTo("idStudent", listStudent.get(x).getId())
+                            .equalTo("idIndicator", 6)
+                            .findAll();
+                    RealmResults<Realm_allocations> allocations = realm.where(Realm_allocations.class)
+                            .equalTo("id", p.getAllocation())
+                            .findAll();
 
-                    results.get(0).setParticipation_score(ind);
-                    //Como sincronizar la data o bien cada cuando se debe de sincronizar
-                    showLog("Student Result: " + results.get(0).getParticipation_score());
+                    showLog(" asis: " + asistencia.size() + " conv: " +  convivencia.size() + " des: " + despempenio.size());
+                    showLog("Materia: " + p.getMatter());
+                    showLog("Lectora: " + lectura.size());
 
+                    if (asistencia.size() > 0 && convivencia.size() > 0 && despempenio.size() > 0)
+                        if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) ||
+                                p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)))
+                            if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) && matematicas.size() > 0)
+                                isFinish = 1;
+                            else if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && lectura.size() > 0) {
+                                isFinish = 1;
+                            }
+                            else
+                                isFinish = 0;
+                        else
+                            isFinish = 1;
+                    else
+                        isFinish = 0;
+
+                    showLog("Finish: " + isFinish);
+                    allocations.get(0).setIs_finish(isFinish);
+
+                    if (participacion.size() > 0)
+                        participacion.get(0).setValue(ind);
+                    else {
+                        Realm_evaluation_indicator evaluations = realm.createObject(Realm_evaluation_indicator.class);
+                        evaluations.setIdPk(getPk());
+                        evaluations.setIdStudent(listStudent.get(x).getId());
+                        evaluations.setIdAllocation(p.getAllocation());
+                        evaluations.setIdIndicator(2);
+                        evaluations.setValue(ind);
+                    }
                 }
-
-                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                        .equalTo("idGroup", p.getIdGroup())
-                        .findAll();
-
-                if (view.get(0).getParticipation_score() == -1)
-                    goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indParti) + "'");
-                else
-                    goodJob(rs.getString(R.string.contentEdit) + " '"+ rs.getString(R.string.indParti) + "'");
-
-                view.get(0).setParticipation_score(1);
                 realm.commitTransaction();
-
+                goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indParti) + "'" + "",
+                        isFinish);
                 viewLatoutEdit();
-
-
             }
         });
 
@@ -268,13 +330,6 @@ public class TabParticipation extends Fragment {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sDialog) {
-                                realm.beginTransaction();
-                                RealmResults<Realm_viewTables> view = realm.where(Realm_viewTables.class)
-                                        .equalTo("idGroup", p.getIdGroup())
-                                        .findAll();
-
-                                view.get(0).setParticipation_score(0);
-                                realm.commitTransaction();
                                 sDialog.dismiss();
                                 viewLayoutList();
                             }
@@ -286,33 +341,34 @@ public class TabParticipation extends Fragment {
 
     }
 
-    private void viewLatoutEdit(){
+    private void viewLatoutEdit() {
         content.setVisibility(View.INVISIBLE);
         subContenedor.setVisibility(View.VISIBLE);
-        int total, mala= 0, regular= 0, buena=0;
+        int total = 0, buena = 0, regular = 0, mala = 0;
 
-        for (int x = 0; x < listStudent.size(); x++){
-            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
-                    .equalTo("idStudent",listStudent.get(x).getId())
-                    .equalTo("subject_id", p.getIdGroup())
+        for (int x = 0; x < listStudent.size(); x++) {
+            RealmResults<Realm_evaluation_indicator> indicator = realm.where(Realm_evaluation_indicator.class)
+                    .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("idAllocation", p.getAllocation())
+                    .equalTo("idIndicator", 2)
                     .findAll();
 
-            if (stIndi.get(0).getParticipation_score() == 0)
-                mala++;
-            else
-            if (stIndi.get(0).getParticipation_score() == 0.5)
-                regular++;
-            else
+            if (indicator.get(0).getValue() == 1)
                 buena++;
+            if (indicator.get(0).getValue() == 0.5)
+                regular++;
+            if (indicator.get(0).getValue() == 0)
+                mala++;
 
         }
 
-        total = mala + regular + buena;
+        total = buena + regular + mala;
 
-        //una * 100 / total + rs.getString(R.string.signo)
-        tableFileOnePro.setText(mala * 100 / total + rs.getString(R.string.signo));
+        tableFileOnePro.setText(buena * 100 / total + rs.getString(R.string.signo));
         tableFileTwoPor.setText(regular * 100 / total + rs.getString(R.string.signo));
-        tableFileThreePor.setText(buena * 100 / total + rs.getString(R.string.signo));
+        tableFileThreePor.setText(mala * 100 / total + rs.getString(R.string.signo));
+
+
     }
 
     private void viewLayoutList(){
@@ -344,25 +400,36 @@ public class TabParticipation extends Fragment {
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         for (int x = 0; x < listStudent.size(); x++){
-            RealmResults<Realm_students_indicator> stIndi = realm.where(Realm_students_indicator.class)
-                    .equalTo("idStudent",listStudent.get(x).getId())
-                    .equalTo("subject_id", p.getIdGroup())
+            RealmResults<Realm_evaluation_indicator> stIndi = realm.where(Realm_evaluation_indicator.class)
+                    .equalTo("idAllocation", p.getAllocation())
+                    .equalTo("idStudent", listStudent.get(x).getId())
+                    .equalTo("idIndicator", 2)
                     .findAll();
 
             extIndicator = (Spinner) view.findViewById(x);
 
-            showLog("Valor de indicator: " + stIndi.get(0).getParticipation_score());
-
-            if (stIndi.get(0).getParticipation_score() == 0)
-                extIndicator.setAdapter(adapter);
-            if (stIndi.get(0).getParticipation_score() == 0.5)
-                extIndicator.setAdapter(ada);
-            if (stIndi.get(0).getParticipation_score() == 1)
+            if (stIndi.size() > 0){
+                if (stIndi.get(0).getValue() == 0)
+                    extIndicator.setAdapter(adapter);
+                if (stIndi.get(0).getValue() == 0.5)
+                    extIndicator.setAdapter(ada);
+                if (stIndi.get(0).getValue() == 1)
+                    extIndicator.setAdapter(ad);
+            }
+            else
                 extIndicator.setAdapter(ad);
         }
     }
 
-    private void goodJob(String content){
+    private int getPk(){
+        RealmResults<Realm_evaluation_indicator> i = realm.where(Realm_evaluation_indicator.class)
+                .equalTo("idPk", -1)
+                .findAll();
+
+        return i.size() + 1;
+    }
+
+    private void goodJob(String content, final int retorna){
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -370,6 +437,8 @@ public class TabParticipation extends Fragment {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
+                        if (retorna > 0)
+                            loadList();
                         sDialog.dismissWithAnimation();
                     }
                 })
@@ -377,11 +446,19 @@ public class TabParticipation extends Fragment {
 
     }
 
+    private void loadList(){
+        Intent i = new Intent(context, MainActivity.class);
+        // i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(i);
+    }
+
     private void showLog(String log){
-        Log.v("TabParicipation", log);
+        Log.e("TabParticipation", log);
     }
 
     private void messageToast(String toast){
         Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
-    }*/
+    }
+
 }
