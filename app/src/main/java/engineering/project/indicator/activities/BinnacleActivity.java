@@ -83,7 +83,7 @@ public class BinnacleActivity extends Activity {
 
 
                 ChildItem child = new ChildItem();
-                child.title = ready.get(i).getIdEvaluation() +": " + students.get(0).getFirstName() + " " + students.get(0).getLastName()+
+                child.title = ready.get(i).getIdEvaluation() +": " + students.get(0).getFirstName() + " " + students.get(0).getLastName()+ " " +
                             students.get(0).getMotherName() + " " + details.get(0).getTilte();
                 child.hint = secondsToDate(ready.get(i).getUpServer());
 
@@ -119,7 +119,7 @@ public class BinnacleActivity extends Activity {
                     .equalTo("idPk",e.get(0).getIdIndicator())
                     .findAll();
             ChildItem child = new ChildItem();
-            child.title =sync.get(i).getIdEvaluation() +": " + students.get(0).getFirstName() + " " + students.get(0).getLastName()+
+            child.title =sync.get(i).getIdEvaluation() +": " + students.get(0).getFirstName() + " " + students.get(0).getLastName()+ " " +
                     students.get(0).getMotherName() + " " + details.get(0).getTilte() ;
             child.hint = secondsToDate(sync.get(i).getCreate());
 
