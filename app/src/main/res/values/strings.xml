@@ -126,6 +126,6 @@
     <string name="sabado">Sábado</string>
     <string name="domingo">Domingo</string>
 
-    <string name="subEdit">Buena es de 90 a 100, Regular de 70 a 100 y mala de 0 a 69</string>
+    <string name="subEdit">Buena es de 90 a 100, Regular de 70 a 89 y mala de 0 a 69</string>
 
 </resources>
