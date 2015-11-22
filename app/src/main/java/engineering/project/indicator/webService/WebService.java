@@ -12,10 +12,12 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -25,8 +27,11 @@ import java.util.Map;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import engineering.project.indicator.MainActivity;
 import engineering.project.indicator.R;
+import engineering.project.indicator.activities.BinnacleActivity;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_binnacle;
+import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
 import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
 import engineering.project.indicator.structureRealm.Realm_indicator_details;
@@ -49,6 +54,12 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     Resources rs;
     ProgressDialog pd;
     Realm realm;
+
+    public WebService(Context context){
+        this.context = context;
+        p = new Preferences(context);
+        realm = Realm.getInstance(context);
+    }
 
     public WebService(Context context, String url){
         this.context = context;
@@ -269,6 +280,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
                                     JSONObject jsonStudent = jsonArray.getJSONObject(x);
                                         Realm_students students = realm.createObject(Realm_students.class);
                                         students.setId(jsonStudent.getInt("id"));
+                                    showLog("idStudent: " + jsonStudent.getInt("id"));
                                         students.setFirstName(jsonStudent.getString("first_name"));
                                         students.setLastName(jsonStudent.getString("last_name"));
                                         students.setMotherName(jsonStudent.getString("mothers_name"));
@@ -301,8 +313,120 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
         volleyRequest(getRequest);
     }
 
-    private void insertEvaluatio(){
-        //api/evaluations/bimester/1/student/4
+    public void syncData(){
+
+        if (validateConexion()){
+            pd = ProgressDialog.show(
+                    context, "Sincronizando datos",
+                    "Esto puedo tomar unos segundos...");
+
+            String url;
+            RealmResults<Realm_binnacle> binacle = realm.where(Realm_binnacle.class)
+                    .equalTo("upServer", 0)
+                    .findAll();
+            JSONObject object = new JSONObject();
+
+            int iteraccion  =0;
+            boolean dismiss = false;
+
+            if (binacle.size() >= 10)
+                iteraccion = 10;
+            else
+                iteraccion= binacle.size();
+
+            for (int x = 0; x < iteraccion; x++ ){
+                RealmResults<Realm_evaluation_indicator> evaluation = realm.where(Realm_evaluation_indicator.class)
+                        .equalTo("idPk", binacle.get(x).getIdEvaluation())
+                        .findAll();
+                RealmResults<Realm_subjects> subjects = realm.where(Realm_subjects.class)
+                        .equalTo("idAllocation",evaluation.get(0).getIdAllocation())
+                        .findAll();
+
+                try {
+                    object.put("subject_id", subjects.get(0).getId());
+                    url = URL + "api/evaluations/bimester/";
+                    url += "1/student/" + evaluation.get(0).getIdStudent() ;
+                    showLog("Subject: " + subjects.get(0).getId());
+
+                    switch (evaluation.get(0).getIdIndicator()){
+                        case 1:
+                            object.put("absences_count", evaluation.get(0).getValue());
+                            break;
+                        case 2:
+                            object.put("participation_score", evaluation.get(0).getValue());
+                            break;
+                        case 3:
+                            object.put("performance_score", evaluation.get(0).getValue());
+                            break;
+                        case 4:
+                            object.put("friendship_score", evaluation.get(0).getValue());
+                            break;
+                        case 5:
+                            object.put("reading_score", evaluation.get(0).getValue());
+                            break;
+                        case 6:
+                            object.put("math_score", evaluation.get(0).getValue());
+                            break;
+                    }
+
+                    if ((x+1) == iteraccion)
+                        dismiss = true;
+                    saveSyncDetails(object,url,  binacle.get(x).getIdPk() , dismiss );
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        else
+            messageSweet(2);
+
+    }
+
+    private void saveSyncDetails(JSONObject object, String link, final int idBinnacle, final boolean dismiss ){
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.PUT,
+                link, object,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (response.getBoolean("success")){
+                                RealmResults<Realm_binnacle> binnacle = realm.where(Realm_binnacle.class)
+                                        .equalTo("idPk",idBinnacle)
+                                        .findAll();
+                                realm.beginTransaction();
+                                binnacle.get(0).setUpServer(secondDate());
+                                realm.commitTransaction();
+
+                                if (dismiss) {
+                                    pd.dismiss();
+                                    Intent refresh = new Intent(context, BinnacleActivity.class);
+                                    refresh.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(refresh);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Volley", "Error: " + error.getMessage());}
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", p.getTokenType() + " " + p.getAccesToken());
+                return headers;
+            }
+        };
+        Volley.newRequestQueue(context).add(jsonObjReq);
+    }
+
+    public long secondDate() {
+        return System.currentTimeMillis() / 1000;//Milisegundos actual del sismtema
     }
 
     private void volleyRequest(StringRequest stringRequest){
@@ -395,7 +519,7 @@ public class WebService implements Response.Listener<JSONObject>, Response.Error
     }
 
     private void showLog(String log){
-        Log.v("WebService", log);
+        Log.e("WebService", log);
     }
 
     private void showLogError(String error){

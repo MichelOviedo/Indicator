@@ -29,6 +29,7 @@ import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
 import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_binnacle;
 import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
@@ -54,6 +55,7 @@ public class TabPerformance extends Fragment {
     ArrayList<ModelStudent> listStudent;
     ArrayList<Integer> indicators;
     int isFinish = 0;
+    int idEva;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -232,18 +234,18 @@ public class TabPerformance extends Fragment {
             @Override
             public void onClick(View v) {
                 indicators = new ArrayList<Integer>();
-                double ind = 0;
+                int ind = 0;
                 realm.beginTransaction();
                 for (int x = 0; x < listStudent.size(); x++) {
 
                     extIndicator = (Spinner) view.findViewById(x);
 
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Buena"))
-                        ind = 1;
+                        ind = 3;
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Regular"))
-                        ind = 0.5;
+                        ind = 2;
                     if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Mala"))
-                        ind = 0;
+                        ind = 1;
                     //// asistencia paticipacion desempenio convivencia lectora matematica
                     RealmResults<Realm_evaluation_indicator> asistencia = realm.where(Realm_evaluation_indicator.class)
                             .equalTo("idAllocation", p.getAllocation())
@@ -295,16 +297,20 @@ public class TabPerformance extends Fragment {
 
                     allocations.get(0).setIs_finish(isFinish);
 
-                    if (despempenio.size() > 0)
+                    if (despempenio.size() > 0) {
+                        idEva = despempenio.get(0).getIdAllocation();
                         despempenio.get(0).setValue(ind);
+                    }
                     else {
+                        idEva = getPk();
                         Realm_evaluation_indicator evaluations = realm.createObject(Realm_evaluation_indicator.class);
-                        evaluations.setIdPk(getPk());
+                        evaluations.setIdPk(idEva);
                         evaluations.setIdStudent(listStudent.get(x).getId());
                         evaluations.setIdAllocation(p.getAllocation());
                         evaluations.setIdIndicator(3);
                         evaluations.setValue(ind);
                     }
+                    saveSync(idEva);
                 }
                 realm.commitTransaction();
                 goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indDesempe) + "'" + "",
@@ -346,11 +352,11 @@ public class TabPerformance extends Fragment {
                     .equalTo("idIndicator", 3)
                     .findAll();
 
-            if (indicator.get(0).getValue() == 1)
+            if (indicator.get(0).getValue() == 3)
                 buena++;
-            if (indicator.get(0).getValue() == 0.5)
+            if (indicator.get(0).getValue() == 2)
                 regular++;
-            if (indicator.get(0).getValue() == 0)
+            if (indicator.get(0).getValue() == 1)
                 mala++;
 
         }
@@ -402,11 +408,11 @@ public class TabPerformance extends Fragment {
             extIndicator = (Spinner) view.findViewById(x);
 
             if (stIndi.size() > 0){
-                if (stIndi.get(0).getValue() == 0)
-                    extIndicator.setAdapter(adapter);
-                if (stIndi.get(0).getValue() == 0.5)
-                    extIndicator.setAdapter(ada);
                 if (stIndi.get(0).getValue() == 1)
+                    extIndicator.setAdapter(adapter);
+                if (stIndi.get(0).getValue() == 2)
+                    extIndicator.setAdapter(ada);
+                if (stIndi.get(0).getValue() == 3)
                     extIndicator.setAdapter(ad);
             }
             else
@@ -414,15 +420,36 @@ public class TabPerformance extends Fragment {
         }
     }
 
+    private int getBinnaclePK(){
+        RealmResults<Realm_binnacle> size = realm.where(Realm_binnacle.class)
+                .notEqualTo("idPk", -1)
+                .findAll();
+
+        return size.size() + 1;
+    }
+
     private int getPk(){
         RealmResults<Realm_evaluation_indicator> i = realm.where(Realm_evaluation_indicator.class)
-                .equalTo("idPk", -1)
+                .notEqualTo("idPk", -1)
                 .findAll();
 
         return i.size() + 1;
     }
 
+    private void saveSync(int idEvaluation){
+        Realm_binnacle binnacle = realm.createObject(Realm_binnacle.class);
+        binnacle.setCreate(secondDate());
+        binnacle.setUpServer(0);
+        binnacle.setIdEvaluation(idEvaluation);
+        binnacle.setIdPk(getBinnaclePK());
+    }
+
+    public long secondDate() {
+        return System.currentTimeMillis() / 1000;//Milisegundos actual del sismtema
+    }
+
     private void goodJob(String content, final int retorna){
+
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -436,7 +463,6 @@ public class TabPerformance extends Fragment {
                     }
                 })
                 .show();
-
     }
 
     private void loadList(){

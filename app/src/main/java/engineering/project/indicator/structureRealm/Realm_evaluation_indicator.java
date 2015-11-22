@@ -7,9 +7,7 @@ import io.realm.RealmObject;
  */
 public class Realm_evaluation_indicator extends RealmObject {
 
-    private int idPk, idStudent, idIndicator, idAllocation;
-    private double value;
-    private int valueAbb;
+    private int idPk, idStudent, idIndicator, idAllocation, value;
 
     public int getIdPk() {
         return idPk;
@@ -43,19 +41,11 @@ public class Realm_evaluation_indicator extends RealmObject {
         this.idStudent = idStudent;
     }
 
-    public double getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(int value) {
         this.value = value;
-    }
-
-    public int getValueAbb() {
-        return valueAbb;
-    }
-
-    public void setValueAbb(int valueAbb) {
-        this.valueAbb = valueAbb;
     }
 }

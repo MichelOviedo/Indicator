@@ -22,6 +22,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import engineering.project.indicator.activities.BinnacleActivity;
 import engineering.project.indicator.activities.LoginActivity;
 import engineering.project.indicator.componentsList.AdapterList;
 import engineering.project.indicator.componentsList.ArrayChildren;
@@ -32,14 +33,15 @@ import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelList;
 import engineering.project.indicator.structureModel.ModelTeacher;
 import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_binnacle;
 import engineering.project.indicator.structureRealm.Realm_faculty_member;
 import engineering.project.indicator.structureRealm.Realm_grades;
+import engineering.project.indicator.structureRealm.Realm_indicator_details;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
 import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
 import engineering.project.indicator.structureRealm.Realm_subjects;
 import engineering.project.indicator.structureRealm.Realm_user;
-import engineering.project.indicator.structureRealm.Realm_viewTables;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -210,7 +212,8 @@ public class MainActivity extends Activity {
         realm.clear(Realm_evaluation_indicator.class);
         realm.clear(Realm_subjects.class);
         realm.clear(Realm_user.class);
-        realm.clear(Realm_viewTables.class);
+        realm.clear(Realm_binnacle.class);
+        realm.clear(Realm_indicator_details.class);
         realm.commitTransaction();
         p.clear();
         loadLogin();
@@ -247,7 +250,7 @@ public class MainActivity extends Activity {
     }
 
     private void createMenu(){
-        tagTitles = new String[2];
+        tagTitles = new String[3];
         tagTitles = getResources().getStringArray(R.array.menuDrawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -255,9 +258,11 @@ public class MainActivity extends Activity {
         ArrayList<DrawerItem> items =
                 new ArrayList<DrawerItem>();
         items.add(
-                new DrawerItem(tagTitles[0], R.mipmap.comentario));
+                new DrawerItem(tagTitles[0], R.mipmap.binnacle));
         items.add(
-                new DrawerItem(tagTitles[1], R.mipmap.salir));
+                new DrawerItem(tagTitles[1], R.mipmap.comentario));
+        items.add(
+                new DrawerItem(tagTitles[2], R.mipmap.salir) );
 
         drawerList.setAdapter(
                 new ListAdapterDrawer(this, items));
@@ -271,9 +276,13 @@ public class MainActivity extends Activity {
 
         switch (position){
             case 0:
-                Toast.makeText(this, "Esta parte permanece en contrccion", Toast.LENGTH_LONG).show();
+                binnacleStart();
                 break;
             case 1:
+                Toast.makeText(this, "Esta parte permanece en contrccion", Toast.LENGTH_LONG).show();
+
+                break;
+            case 2:
                 dialogSesion();
                 break;
         }
@@ -304,6 +313,12 @@ public class MainActivity extends Activity {
         else {}
 
         return newAccount;
+    }
+
+    private void binnacleStart(){
+        Intent i = new Intent(this, BinnacleActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 
     private void showLog(String log){

@@ -4,6 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Iniciar Sesión</string>
+    <string name="sync">Sincronizar ahora!</string>
 
     <string name="errorConexion">Necesitas una conexion estable a internet para realizar esta acción.</string>
     <string name="website">www.evaluafacil.edu.mx</string>
@@ -41,12 +42,12 @@
     <string name="espa">Español</string>
     <string name="mat">Matemáticas</string>
 
-    <string name="titleEspa">Lec.</string>
-    <string name="titleDesemp">Dmp.</string>
-    <string name="titleCon">Conv.</string>
-    <string name="titleAsis">Asis.</string>
-    <string name="titlePart">Ptc.</string>
-    <string name="titleMath">Mat.</string>
+    <string name="titleEspa">Lectora</string>
+    <string name="titleDesemp">Desemepeño</string>
+    <string name="titleCon">Convivencia</string>
+    <string name="titleAsis">Asistencia</string>
+    <string name="titlePart">Participación</string>
+    <string name="titleMath">Matemática</string>
 
     <string name="asisTitleEdit">Promedio de faltas</string>
     <string name="conviEdit">Promedio de convivencia</string>
@@ -103,9 +104,23 @@
     <string name="seguroNo">NO!</string>
 
     <string-array name="menuDrawer">
+        <item>Bitácotra</item>
         <item>Dejanos un comentario</item>
         <item>Cerrar Sesión</item>
     </string-array>
-    <string name="title_activity_indicator_tabs">IndicatorTabs</string>
+    <string name="title_activity_indicator_tabs">Indicadores</string>
+    <string name="title_activity_binnacle">Bitácora</string>
 
+    <string name="binnacleTitleOk">Sincronizados</string>
+    <string name="binnacleTitleSync">Para Sincronizados</string>
+    <string name="titleBinnacle">Información sincronizada hasta el momento.</string>
+
+    <!--Dias -->
+    <string name="lunes">Lunes</string>
+    <string name="martes">Martes</string>
+    <string name="miercoles">Miércoles</string>
+    <string name="jueves">Jueves</string>
+    <string name="viernes">Viernes</string>
+    <string name="sabado">Sábado</string>
+    <string name="domingo">Domingo</string>
 </resources>

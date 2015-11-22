@@ -29,6 +29,7 @@ import engineering.project.indicator.R;
 import engineering.project.indicator.preferences.Preferences;
 import engineering.project.indicator.structureModel.ModelStudent;
 import engineering.project.indicator.structureRealm.Realm_allocations;
+import engineering.project.indicator.structureRealm.Realm_binnacle;
 import engineering.project.indicator.structureRealm.Realm_evaluation_indicator;
 import engineering.project.indicator.structureRealm.Realm_school_groups;
 import engineering.project.indicator.structureRealm.Realm_students;
@@ -54,6 +55,7 @@ public class TabAbsences extends Fragment {
     ArrayList<ModelStudent> listStudent;
     ArrayList<Integer> indicators;
     int isFinish = 0;
+    int idEva;
 
     String  cade = "";
     public TabAbsences(){}
@@ -238,7 +240,6 @@ public class TabAbsences extends Fragment {
                             .equalTo("idStudent", listStudent.get(x).getId())
                             .equalTo("idIndicator", 1)
                             .findAll();
-                    /*** 1 Asistencia * 2 Participacion * 3 Desempenio* 4 Convivencia 5 Lectora * 6 Matematica*/
                     RealmResults<Realm_evaluation_indicator> results2 = realm.where(Realm_evaluation_indicator.class)
                             .equalTo("idAllocation", p.getAllocation())
                             .equalTo("idStudent", listStudent.get(x).getId())
@@ -272,12 +273,11 @@ public class TabAbsences extends Fragment {
                         if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) ||
                                 p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)))
                             if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.mat)) && mate.size() > 0)
-                               isFinish = 1;
+                                isFinish = 1;
+                            else if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && espa.size() > 0)
+                                isFinish = 1;
                             else
-                                if (p.getMatter().equalsIgnoreCase(rs.getString(R.string.espa)) && espa.size() > 0)
-                                    isFinish  =1;
-                                else
-                                    isFinish = 0;
+                                isFinish = 0;
                         else
                             isFinish = 1;
                     else
@@ -285,16 +285,20 @@ public class TabAbsences extends Fragment {
 
                     allocations.get(0).setIs_finish(isFinish);
 
-                    if (results.size() > 0)
-                        results.get(0).setValueAbb(value);
+                    if (results.size() > 0) {
+                        results.get(0).setValue(value);
+                        idEva = results.get(0).getIdPk();
+                    }
                     else {
+                        idEva = getPk();
                         Realm_evaluation_indicator evaluations = realm.createObject(Realm_evaluation_indicator.class);
-                        evaluations.setIdPk(getPk());
+                        evaluations.setIdPk(idEva);
                         evaluations.setIdStudent(listStudent.get(x).getId());
                         evaluations.setIdAllocation(p.getAllocation());
                         evaluations.setIdIndicator(1);
-                        evaluations.setValueAbb(value);
+                        evaluations.setValue(value);
                     }
+                    saveSync(idEva);
                 }
                 realm.commitTransaction();
                 goodJob(rs.getString(R.string.contentSave) + " '" + rs.getString(R.string.indAsistencia) + "'" + "",
@@ -336,7 +340,7 @@ public class TabAbsences extends Fragment {
                     .equalTo("idIndicator",1)
                     .findAll();
 
-            switch (indicator.get(0).getValueAbb()){
+            switch (indicator.get(0).getValue()){
                 case 0:
                     ninguna++;
                     break;
@@ -373,7 +377,7 @@ public class TabAbsences extends Fragment {
             extIndicator = (EditText) view.findViewById(x);
 
             if (indicator.size() > 0)
-                extIndicator.setText(indicator.get(0).getValueAbb() + "");
+                extIndicator.setText(indicator.get(0).getValue() + "");
             else
                 extIndicator.setText("0");
         }
@@ -381,13 +385,35 @@ public class TabAbsences extends Fragment {
 
     private int getPk(){
         RealmResults<Realm_evaluation_indicator> i = realm.where(Realm_evaluation_indicator.class)
-                .equalTo("idPk", -1)
+                .notEqualTo("idPk", -1)
                 .findAll();
 
         return i.size() + 1;
     }
 
+    private int getBinnaclePK(){
+        RealmResults<Realm_binnacle> size = realm.where(Realm_binnacle.class)
+                .notEqualTo("idPk", -1)
+                .findAll();
+
+        return size.size() + 1;
+    }
+
+    private void saveSync(int idEvaluation){
+
+        Realm_binnacle binnacle = realm.createObject(Realm_binnacle.class);
+        binnacle.setCreate(secondDate());
+        binnacle.setUpServer(0);
+        binnacle.setIdEvaluation(idEvaluation);
+        binnacle.setIdPk(getBinnaclePK());
+    }
+
+    public long secondDate() {
+        return System.currentTimeMillis() / 1000;//Milisegundos actual del sismtema
+    }
+
     private void goodJob(String content, final int retorna){
+
         new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText(rs.getString(R.string.goodJob))
                 .setContentText(content)
@@ -401,7 +427,6 @@ public class TabAbsences extends Fragment {
                     }
                 })
                 .show();
-
     }
 
     private void loadList(){

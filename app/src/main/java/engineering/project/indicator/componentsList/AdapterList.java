@@ -136,9 +136,9 @@ public class AdapterList extends BaseExpandableListAdapter {
         final int allocation = arrayChildren.getIdAllocation();
 
         if (arrayChildren.getPhoto() == 1)
-            status.setBackgroundResource(R.mipmap.good);
+            status.setBackgroundResource(R.mipmap.ok);
         else
-            status.setBackgroundResource(R.mipmap.cross);
+            status.setBackgroundResource(R.mipmap.not);
 
         view.setTag(holder);
 

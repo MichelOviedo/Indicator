@@ -100,37 +100,44 @@ public class IndicatorTabs extends AppCompatActivity {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
         tabOne.setText(getResources().getString(R.string.titleAsis));
-        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.salir, 0, 0);
+        tabOne.setTextSize(9);
+        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.ind_abb, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
         tabTwo.setText(getResources().getString(R.string.titleCon));
-        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+        tabTwo.setTextSize(9);
+        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.ind_friend, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
         TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
         tabThree.setText(getResources().getString(R.string.titleDesemp));
-        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+        tabThree.setTextSize(9);
+        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.ind_performa, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
         TextView tab = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
         tab.setText(getResources().getString(R.string.titlePart));
-        tab.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+        tab.setTextSize(9);
+        tab.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.ind_participation, 0, 0);
         tabLayout.getTabAt(3).setCustomView(tab);
 
 
         if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.mat))){
             TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
             tabFour.setText(getResources().getString(R.string.titleMath));
-            tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+            tabFour.setTextSize(9);
+            tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.ind_mat, 0, 0);
             tabLayout.getTabAt(4).setCustomView(tabFour);
         }
 
         if (p.getMatter().equalsIgnoreCase(getResources().getString(R.string.espa))){
             TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.title_tab, null);
             tabFour.setText(getResources().getString(R.string.titleEspa));
-            tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.comentario, 0, 0);
+            tabFour.setTextSize(9);
+            tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.ind_reading, 0, 0);
             tabLayout.getTabAt(4).setCustomView(tabFour);
+
         }
     }
 

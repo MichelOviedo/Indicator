@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="engineering.project.indicator">
+    package="engineering.project.indicator" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Sync -->
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/app"
-        tools:replace="android:icon"
         android:label="@string/app_name"
-        android:theme="@style/MyMaterialTheme">
+        android:theme="@style/MyMaterialTheme"
+        tools:replace="android:icon" >
 
         <!-- Sync Adapter -->
-        <service
-            android:name="engineering.project.indicator.sync.authenticator.AuthenticatorService">
+        <service android:name=".sync.authenticator.AuthenticatorService" >
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
         <service
-            android:name="engineering.project.indicator.sync.syncadapter.SyncService"
+            android:name=".sync.syncadapter.SyncService"
             android:exported="true"
-            android:process=":sync">
+            android:process=":sync" >
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
         <provider
-            android:name="engineering.project.indicator.sync.provider.StubProvider"
+            android:name=".sync.provider.StubProvider"
             android:authorities="engineering.project.indicator.sync.provider"
             android:exported="false"
-            android:syncable="true"/>
+            android:syncable="true" />
         <!-- /Sync Adapter -->
 
         <activity
@@ -63,6 +64,11 @@
         <activity
             android:name=".activities.IndicatorTabs"
             android:label="@string/title_activity_indicator_tabs" >
+        </activity>
+        <activity
+            android:name=".activities.BinnacleActivity"
+            android:label="@string/title_activity_binnacle"
+            android:noHistory="true">
         </activity>
     </application>
 
