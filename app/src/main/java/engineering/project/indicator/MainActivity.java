@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -222,7 +223,7 @@ public class MainActivity extends Activity {
 
     private void dialogSesion(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getResources().getString(R.string.contentSesion))//Contenido
+        builder.setMessage(getResources().getString(R.string.contentSesion) + "\n" + getResources().getString(R.string.subCintentSesion))//Contenido
                 .setTitle(getResources().getString(R.string.cuidado))//Titulo
                 .setCancelable(false)
                 .setPositiveButton(getResources().getString(R.string.aceptar), new DialogInterface.OnClickListener() {
@@ -319,6 +320,15 @@ public class MainActivity extends Activity {
         Intent i = new Intent(this, BinnacleActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == 14) {
+            this.finish();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void showLog(String log){

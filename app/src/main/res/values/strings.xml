@@ -80,6 +80,7 @@
 
     <!-- Cerrar Sesion -->
     <string name="contentSesion">¿Estas seguro(a) de querer CERRAR SESION?</string>
+    <string name="subCintentSesion">Todos los datos que aún no se han sicronizado se perderan.</string>
 
     <!-- etiquetas error-->
     <string name="errorMessage">Oops...!</string>

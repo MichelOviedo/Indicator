@@ -218,9 +218,9 @@ public class TabPerformance extends Fragment {
             indicator.setId(x);
             indicator.setBackgroundResource(R.drawable.celda);
             indicator.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-            indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+            indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
             //indicator.setAdapter(adapter);
-            //indicator.setLayoutParams(layoutTexto);
+            indicator.setLayoutParams(layoutTexto);
 
             fila.addView(txtId);
             fila.addView(indicator);

@@ -3,6 +3,8 @@ package engineering.project.indicator.componentsList;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -106,6 +108,7 @@ public class AdapterList extends BaseExpandableListAdapter {
             Log.e("AdapterList","Error al querer convertir la variable de porcentaje");
         }
 
+        progressBar.getProgressDrawable().setColorFilter(Color.parseColor("#125688"), PorterDuff.Mode.SRC_IN);
         progressBar.setProgress(porcentaje);
         view.setTag(holder);
 
@@ -147,6 +150,7 @@ public class AdapterList extends BaseExpandableListAdapter {
             public void onClick(View v) {
                 p.setAllocation(allocation);
                 Intent i = new Intent(context, IndicatorTabs.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
 

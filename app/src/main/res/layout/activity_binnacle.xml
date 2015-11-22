@@ -55,7 +55,7 @@
                 android:layout_height="fill_parent"
                 android:text="@string/sync"
                 android:drawableLeft="@mipmap/sync"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/click_button"
                 android:textColor="#FFFFFF" />
         </RelativeLayout>
 

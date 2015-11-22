@@ -150,6 +150,7 @@ public class IndicatorTabs extends AppCompatActivity {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
 
+            this.finish();
             return false;
         }else
         return super.onKeyDown(keyCode, event);
