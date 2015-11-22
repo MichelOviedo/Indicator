@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,8 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -47,8 +49,8 @@ public class TabMath extends Fragment {
     Resources rs;
     Context context;
     Button save, edit;
-    Spinner indicator, extIndicator;
-    TextView type, count, tableTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor, titleEdit;
+    EditText indicator, extIndicator;
+    TextView type, count, tableTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor, titleEdit, titleEdotSub;
     RelativeLayout content, subContenedor;
     Preferences p;
     Realm realm;
@@ -107,8 +109,10 @@ public class TabMath extends Fragment {
         tableFileThree = (TextView) view.findViewById(R.id.txvTableFileThree);
         tableFileThreePor = (TextView) view.findViewById(R.id.txvTableFileThreePor);
         titleEdit = (TextView) view.findViewById(R.id.txvTlitleEdit);
+        titleEdotSub = (TextView) view.findViewById(R.id.txvSubTitleTab);
 
         titleEdit.setText(rs.getString(R.string.mateEdit));
+        titleEdotSub.setText(rs.getString(R.string.subEdit));
         tableTitle.setText(rs.getString(R.string.titleTab));
         tablePorcentage.setText(rs.getString(R.string.promedio));
         tableFileOne.setText(rs.getString(R.string.tabBue));
@@ -203,7 +207,7 @@ public class TabMath extends Fragment {
             fila.setLayoutParams(layoutFila);
 
             txtId = new TextView(context);
-            indicator = new Spinner(context);
+            indicator = new EditText(context);
 
             txtId.setText(listStudent.get(x).getFirstName() + "\n" +
                     listStudent.get(x).getLastName() + " " + listStudent.get(x).getMotherName());
@@ -215,10 +219,10 @@ public class TabMath extends Fragment {
             indicator.setGravity(Gravity.CENTER_HORIZONTAL);
             indicator.setId(x);
             indicator.setBackgroundResource(R.drawable.celda);
-            //indicator.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-            // indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-            indicator.setAdapter(adapter);
-            indicator.setLayoutParams(layoutTexto);
+            indicator.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+            indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+           // indicator.setAdapter(adapter);
+            //indicator.setLayoutParams(layoutTexto);
 
             fila.addView(txtId);
             fila.addView(indicator);
@@ -239,14 +243,12 @@ public class TabMath extends Fragment {
 
                 for (int x = 0; x < listStudent.size(); x++) {
 
-                    extIndicator = (Spinner) view.findViewById(x);
+                    extIndicator = (EditText) view.findViewById(x);
 
-                    if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Buena"))
-                        ind = 3;
-                    if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Regular"))
-                        ind = 2;
-                    if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Mala"))
-                        ind = 1;
+                    if (extIndicator.getText().toString().equalsIgnoreCase(""))
+                        ind = 0;
+                    else
+                        ind = Integer.parseInt(extIndicator.getText().toString());
                     //// asistencia paticipacion desempenio convivencia lectora matematica
                     RealmResults<Realm_evaluation_indicator> asistencia = realm.where(Realm_evaluation_indicator.class)
                             .equalTo("idAllocation", p.getAllocation())
@@ -344,11 +346,12 @@ public class TabMath extends Fragment {
                     .equalTo("idIndicator", 6)
                     .findAll();
 
-            if (indicator.get(0).getValue() == 3)
+            if (indicator.get(0).getValue() >=90 )
                 buena++;
-            if (indicator.get(0).getValue() == 2)
+            else
+            if (indicator.get(0).getValue() >= 70)
                 regular++;
-            if (indicator.get(0).getValue() == 1)
+            else
                 mala++;
 
         }
@@ -366,7 +369,7 @@ public class TabMath extends Fragment {
         content.setVisibility(View.VISIBLE);
         subContenedor.setVisibility(View.INVISIBLE);
 
-        List<String> spinnerArray = new ArrayList<String>();
+       /* List<String> spinnerArray = new ArrayList<String>();
         spinnerArray.add("Mala");
         spinnerArray.add("Buena");
         spinnerArray.add("Regular");
@@ -388,7 +391,7 @@ public class TabMath extends Fragment {
         s.add("Mala");
         ArrayAdapter<String> ad = new ArrayAdapter<String>(
                 context, android.R.layout.simple_spinner_item, s);
-        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);*/
 
         for (int x = 0; x < listStudent.size(); x++) {
             RealmResults<Realm_evaluation_indicator> stIndi = realm.where(Realm_evaluation_indicator.class)
@@ -397,17 +400,12 @@ public class TabMath extends Fragment {
                     .equalTo("idIndicator", 6)
                     .findAll();
 
-            extIndicator = (Spinner) view.findViewById(x);
+            extIndicator = (EditText) view.findViewById(x);
 
-            if (stIndi.size() > 0) {
-                if (stIndi.get(0).getValue() == 1)
-                    extIndicator.setAdapter(adapter);
-                if (stIndi.get(0).getValue() == 2)
-                    extIndicator.setAdapter(ada);
-                if (stIndi.get(0).getValue() == 3)
-                    extIndicator.setAdapter(ad);
-            } else
-                extIndicator.setAdapter(ad);
+            if (stIndi.size() > 0)
+                extIndicator.setText("" + stIndi.get(0).getValue());
+            else
+                extIndicator.setText("100");
         }
     }
 

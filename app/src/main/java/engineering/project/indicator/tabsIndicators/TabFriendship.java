@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,8 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -47,8 +49,8 @@ public class TabFriendship extends Fragment {
     Resources rs;
     Context context;
     Button save, edit;
-    Spinner indicator, extIndicator;
-    TextView type, count, tableTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor, titleEdit;
+    EditText indicator, extIndicator;
+    TextView type, count, tableTitle, tableSubTitle, tablePorcentage, tableFileOne, tableFileOnePro, tableFileTwo, tableFileTwoPor, tableFileThree, tableFileThreePor, titleEdit;
     RelativeLayout content, subContenedor;
     Preferences p;
     Realm realm;
@@ -69,9 +71,7 @@ public class TabFriendship extends Fragment {
         context = container.getContext();
 
         builder();
-        showLog("0");
         userButton();
-        showLog("0.1");
 
         return view;
     }
@@ -110,8 +110,10 @@ public class TabFriendship extends Fragment {
         tableFileThree  = (TextView) view.findViewById(R.id.txvTableFileThree);
         tableFileThreePor  = (TextView) view.findViewById(R.id.txvTableFileThreePor);
         titleEdit = (TextView) view.findViewById(R.id.txvTlitleEdit);
+        tableSubTitle = (TextView) view.findViewById(R.id.txvSubEdit);
 
         titleEdit.setText(rs.getString(R.string.conviEdit));
+        tableSubTitle.setText(rs.getString(R.string.subEdit) );
         tableTitle.setText(rs.getString(R.string.titleTab));
         tablePorcentage.setText(rs.getString(R.string.promedio));
         tableFileOne.setText(rs.getString(R.string.tabBue));
@@ -179,20 +181,18 @@ public class TabFriendship extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 context, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        showLog("11");
 
         RealmResults<Realm_allocations> all = realm.where(Realm_allocations.class)
                 .equalTo("id", p.getAllocation())
                 .findAll();
-        showLog("12");
+
         RealmResults<Realm_school_groups> group = realm.where(Realm_school_groups.class)
                 .equalTo("id", all.get(0).getGroupId())
                 .findAll();
-        showLog("13");
+
         RealmResults<Realm_students> studentses = realm.where(Realm_students.class)
                 .equalTo("gruopId", group.get(0).getId())
                 .findAll();
-        showLog("14");
 
         for (int x = 0; x < studentses.size(); x++) {
             student = new ModelStudent();
@@ -206,19 +206,17 @@ public class TabFriendship extends Fragment {
             listStudent.add(student);
         }
 
-        showLog("15");
         for (int x = 0; x < listStudent.size(); x++) {
             TableRow fila;
             TextView txtId;
 
-            showLog("16");
             fila = new TableRow(context);
             fila.setLayoutParams(layoutFila);
 
             txtId = new TextView(context);
-            indicator = new Spinner(context);
+            indicator = new EditText(context);
 
-            txtId.setText(listStudent.get(x).getFirstName()+"\n" +
+            txtId.setText(listStudent.get(x).getFirstName() + "\n" +
                     listStudent.get(x).getLastName() + " " + listStudent.get(x).getMotherName());
             txtId.setGravity(Gravity.CENTER_HORIZONTAL);
             txtId.setBackgroundResource(R.drawable.celda);
@@ -228,15 +226,14 @@ public class TabFriendship extends Fragment {
             indicator.setGravity(Gravity.CENTER_HORIZONTAL);
             indicator.setId(x);
             indicator.setBackgroundResource(R.drawable.celda);
-            //indicator.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-            // indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-            indicator.setAdapter(adapter);
+            indicator.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+            indicator.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+            //indicator.setAdapter(adapter);
             indicator.setLayoutParams(layoutTexto);
 
             fila.addView(txtId);
             fila.addView(indicator);
             table.addView(fila);
-            showLog("17");
         }
     }
     //</editor-fold>
@@ -252,14 +249,12 @@ public class TabFriendship extends Fragment {
                 realm.beginTransaction();
                 for (int x = 0; x < listStudent.size(); x++) {
 
-                    extIndicator = (Spinner) view.findViewById(x);
+                    extIndicator = (EditText) view.findViewById(x);
 
-                    if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Buena"))
-                        ind = 3;
-                    if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Regular"))
-                        ind = 2;
-                    if (extIndicator.getSelectedItem().toString().equalsIgnoreCase("Mala"))
-                        ind = 1;
+                    if (extIndicator.getText().toString().equalsIgnoreCase(""))
+                        ind = 0;
+                    else
+                        ind = Integer.parseInt(extIndicator.getText().toString());
 
                     RealmResults<Realm_evaluation_indicator> results = realm.where(Realm_evaluation_indicator.class)
                             .equalTo("idAllocation", p.getAllocation())
@@ -314,8 +309,7 @@ public class TabFriendship extends Fragment {
                     if (results4.size() > 0) {
                         results4.get(0).setValue(ind);
                         idEva = results4.get(0).getIdPk();
-                    }
-                    else {
+                    } else {
                         idEva = getPk();
                         Realm_evaluation_indicator evaluations = realm.createObject(Realm_evaluation_indicator.class);
                         evaluations.setIdPk(idEva);
@@ -366,12 +360,13 @@ public class TabFriendship extends Fragment {
                     .equalTo("idIndicator", 4)
                     .findAll();
 
-            if (indicator.get(0).getValue() == 3)
+            if (indicator.get(0).getValue() >=90 )
                 buena++;
-            if (indicator.get(0).getValue() == 2)
-                regular++;
-            if (indicator.get(0).getValue() == 1)
-                mala++;
+            else
+                if (indicator.get(0).getValue() >= 70)
+                    regular++;
+                else
+                    mala++;
 
         }
 
@@ -388,30 +383,6 @@ public class TabFriendship extends Fragment {
         content.setVisibility(View.VISIBLE);
         subContenedor.setVisibility(View.INVISIBLE);
 
-        List<String> spinnerArray =  new ArrayList<String>();
-        spinnerArray.add("Mala");
-        spinnerArray.add("Buena");
-        spinnerArray.add("Regular");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                context, android.R.layout.simple_spinner_item, spinnerArray);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        List<String> spi =  new ArrayList<String>();
-        spi.add("Regular");
-        spi.add("Buena");
-        spi.add("Mala");
-        ArrayAdapter<String> ada = new ArrayAdapter<String>(
-                context, android.R.layout.simple_spinner_item, spi);
-        ada.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        List<String> s =  new ArrayList<String>();
-        s.add("Buena");
-        s.add("Regular");
-        s.add("Mala");
-        ArrayAdapter<String> ad = new ArrayAdapter<String>(
-                context, android.R.layout.simple_spinner_item, s);
-        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         for (int x = 0; x < listStudent.size(); x++){
             RealmResults<Realm_evaluation_indicator> stIndi = realm.where(Realm_evaluation_indicator.class)
                     .equalTo("idAllocation", p.getAllocation())
@@ -419,21 +390,12 @@ public class TabFriendship extends Fragment {
                     .equalTo("idIndicator", 4)
                     .findAll();
 
-            extIndicator = (Spinner) view.findViewById(x);
+            extIndicator = (EditText) view.findViewById(x);
 
-            if (stIndi.size() > 0){
-                if (stIndi.get(0).getValue() == 1)
-                    extIndicator.setAdapter(adapter);
-                if (stIndi.get(0).getValue() == 2)
-                    extIndicator.setAdapter(ada);
-                if (stIndi.get(0).getValue() == 3)
-                    extIndicator.setAdapter(ad);
-            }
+            if (stIndi.size() > 0)
+                extIndicator.setText("" + stIndi.get(0).getValue());
             else
-                extIndicator.setAdapter(ad);
-
-
-
+                extIndicator.setText("100");
         }
     }
 

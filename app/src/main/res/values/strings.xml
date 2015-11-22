@@ -50,7 +50,8 @@
     <string name="titleMath">Matemática</string>
 
     <string name="asisTitleEdit">Promedio de faltas</string>
-    <string name="conviEdit">Promedio de convivencia</string>
+    <string name="conviEdit">Promedio de convivencia escolar</string>
+    <string name="conviEdit2">Promedio de convivencia escolar</string>
     <string name="deseEdit">Promedio de desempeño</string>
     <string name="partEdit">Promedio de paticipación</string>
     <string name="lecEdit">Promedio de comprensión lectora</string>
@@ -123,4 +124,7 @@
     <string name="viernes">Viernes</string>
     <string name="sabado">Sábado</string>
     <string name="domingo">Domingo</string>
+
+    <string name="subEdit">Buena es de 90 a 100, Regular de 70 a 100 y mala de 0 a 69</string>
+
 </resources>
